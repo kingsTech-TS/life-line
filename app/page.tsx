@@ -71,7 +71,8 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 md:py-16 bg-foreground text-background">
+      
+      {/* <section className="py-12 md:py-16 bg-foreground text-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
@@ -92,7 +93,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Problem Section */}
       <section className="py-16 md:py-24">

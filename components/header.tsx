@@ -13,8 +13,9 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
     { href: "/shop", label: "Shop" },
+    { href: "/donate", label: "Donate" },
     { href: "/impact", label: "Impact" },
-    { href: "/contact", label: "Contact" },
+    { href: "/finances", label: "Finances" },
   ]
 
   return (
@@ -44,7 +45,7 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button asChild variant="outline" size="sm" className="b">
+            <Button asChild variant="outline" size="sm">
               <Link href="/donate">Donate Now</Link>
             </Button>
           </div>
