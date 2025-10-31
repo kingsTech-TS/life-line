@@ -99,11 +99,9 @@ export default function Home() {
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">The Challenge We're Addressing</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">Why We Exist</h2>
             <p className="text-lg text-foreground/80 mb-6">
-              Millions of people in underserved communities lack access to basic healthcare. Limited resources,
-              inadequate infrastructure, and geographic barriers create a healthcare crisis that demands immediate
-              action.
+             Every day, communities across Nigeria face challenges from access to clean water to education and healthcare.LifeLine is building a bridge between purpose-driven people, brands, and causes — creating local solutions for local problems.
             </p>
             <div className="space-y-4">
               <div className="flex gap-4">
