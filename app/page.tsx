@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight, Heart, Users, TrendingUp, Zap } from "lucide-react"
+import { ArrowRight, Heart, Users, TrendingUp, Zap, Handshake, HandshakeIcon, HandFistIcon, HeartPlusIcon } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Card } from "../components/ui/card"
 
@@ -18,7 +18,7 @@ export default function Home() {
 
     try {
       if (typeof window !== "undefined" && (window as any).gtag) {
-        ;(window as any).gtag("event", "newsletter_signup", {
+        ; (window as any).gtag("event", "newsletter_signup", {
           email_provided: !!email,
         })
       }
@@ -50,20 +50,20 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 text-balance">
-              Quality Healthcare for Every Community
+              Together, We’re Restoring Hope, One Community at a Time.
             </h1>
             <p className="text-lg md:text-xl text-foreground/80 mb-8 text-balance">
-              LifeLine brings accessible, affordable healthcare and wellness solutions to underserved communities across
-              Nigeria. Together, we're building a healthier future.
+              LifeLine by NPHN is a movement of people, brands, and communities working hand-in-hand to solve real problems from access to clean water to healthcare, and beyond.
+              Because every community deserves a lifeline.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
                 <Link href="/donate">
-                  Donate Now <ArrowRight className="ml-2 h-4 w-4" />
+                  Join as a Partner <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/about">Learn More</Link>
+                <Link href="/about">Support with a Donation</Link>
               </Button>
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      
+
       {/* <section className="py-12 md:py-16 bg-foreground text-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -101,7 +101,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">Why We Exist</h2>
             <p className="text-lg text-foreground/80 mb-6">
-             Every day, communities across Nigeria face challenges from access to clean water to education and healthcare.LifeLine is building a bridge between purpose-driven people, brands, and causes — creating local solutions for local problems.
+              Every day, communities across Nigeria face challenges from access to clean water to education and healthcare.LifeLine is building a bridge between purpose-driven people, brands, and causes — creating local solutions for local problems.
             </p>
             <div className="space-y-4">
               <div className="flex gap-4">
@@ -140,16 +140,20 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
               {
-                icon: Heart,
-                title: "Donate",
-                description: "Contribute to our mission through one-time or recurring donations",
+                icon: HandshakeIcon,
+                title: "Collaborate",
+                description: "We partner with brands creating purposeful products.",
               },
               {
-                icon: Users,
-                title: "Empower",
-                description: "Your funds support local healthcare workers and community leaders",
+                icon: HeartPlusIcon,
+                title: "Support",
+                description: "You donate or buy these products, knowing every naira goes toward impact.",
               },
-              { icon: TrendingUp, title: "Scale", description: "We expand services to reach more communities in need" },
+              {
+                icon: TrendingUp,
+                title: "Change Lives",
+                description: "Together, we fund projects solving real local problems."
+              },
               { icon: Zap, title: "Impact", description: "Real lives are changed through accessible healthcare" },
             ].map((item, index) => (
               <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow">

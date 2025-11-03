@@ -91,79 +91,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* Meet the Team */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-10">Meet the Team</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: "Dr. Amara Okafor", role: "Executive Director" },
-              { name: "Chioma Adeyemi", role: "Head of Programs" },
-              { name: "Tunde Oluwaseun", role: "Finance Director" },
-              { name: "Zainab Hassan", role: "Community Outreach Lead" },
-              { name: "Emeka Nwankwo", role: "Health Education Coordinator" },
-              { name: "Fatima Ibrahim", role: "Monitoring & Evaluation Lead" },
-              { name: "David Okonkwo", role: "Operations Manager" },
-              { name: "Grace Okafor", role: "Communications Officer" },
-            ].map((member, index) => (
-              <Card
-                key={index}
-                className="p-6 text-center shadow-sm hover:shadow-md transition-shadow duration-300"
-              >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mx-auto mb-4 flex items-center justify-center text-3xl">
-                  👤
-                </div>
-                <h3 className="font-semibold text-lg text-foreground">{member.name}</h3>
-                <p className="text-sm text-foreground/70">{member.role}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why We Exist */}
-      <section className="py-20 md:py-28 bg-muted/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 text-center md:text-left">
-            Why We Exist
-          </h2>
-          <div className="max-w-7xl mx-auto space-y-4 text-foreground/80 leading-relaxed">
-            <p>
-              LifeLine exists because healthcare is a fundamental human right, not a privilege. In
-              Nigeria, millions of people lack access to basic healthcare services, leading to
-              preventable deaths and suffering. This is not inevitable—it's a choice that can be
-              changed through dedicated effort and community-centered action.
-            </p>
-            <p>We exist to bridge the healthcare gap. We believe that:</p>
-            <ul className="space-y-3 mb-6 list-none">
-              {[
-                "Every person deserves access to quality healthcare regardless of their economic status.",
-                "Communities must be at the center of healthcare solutions.",
-                "Prevention is more powerful than cure.",
-                "Education empowers people to take control of their health.",
-                "Sustainable change requires partnership and collaboration.",
-              ].map((text, i) => (
-                <li key={i} className="flex gap-3 items-start">
-                  <span className="text-primary font-bold">•</span>
-                  <span>{text}</span>
-                </li>
-              ))}
-            </ul>
-            <p>
-              We exist to transform these beliefs into action and create a healthier, more equitable
-              Nigeria for all.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
-      <section className="py-20 md:py-28 bg-primary text-primary-foreground text-center">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Join Our Mission</h2>
-          <p className="text-lg mb-8 opacity-90">
-            Whether through donations, volunteering, or partnerships, there are many ways to support
-            our work.
+          <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
+            Whether through donations, volunteering, or partnerships, there are many ways to support our work.
           </p>
           <Button asChild size="lg" variant="secondary">
             <Link href="/donate">Get Involved</Link>
