@@ -1,16 +1,24 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight, Heart, Users, TrendingUp, Zap, Handshake, HandshakeIcon, HandFistIcon, HeartPlusIcon } from "lucide-react"
+import {
+  ArrowRight,
+  HeartPlusIcon,
+  TrendingUp,
+  Zap,
+  HandshakeIcon,
+  ChevronDown
+} from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Card } from "../components/ui/card"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function Home() {
   const [email, setEmail] = useState("")
   const [isSubscribing, setIsSubscribing] = useState(false)
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null)
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,7 +26,7 @@ export default function Home() {
 
     try {
       if (typeof window !== "undefined" && (window as any).gtag) {
-        ; (window as any).gtag("event", "newsletter_signup", {
+        ;(window as any).gtag("event", "newsletter_signup", {
           email_provided: !!email,
         })
       }
@@ -43,18 +51,25 @@ export default function Home() {
     }
   }
 
+  const faqs = [
+    { q: "Who’s behind Lifeline?", a: "Lifeline is powered by a collective of people and partners committed to building black communities globally." },
+    { q: "How can I learn more about your governance and legal structure?", a: "You can explore our transparency page for governance, financial statements, and structure details." },
+    { q: "Is Lifeline a registered charity?", a: "Yes, Lifeline is a legally registered non-profit organization." },
+    { q: "How does Lifeline select and vet project partners?", a: "We carefully evaluate partners based on credibility, track record, and alignment with our impact goals." },
+  ]
+
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
+
+      {/* HERO SECTION */}
       <section className="relative py-20 md:py-32 bg-gradient-to-br from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 text-balance">
+            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
               Together, We’re Restoring Hope, One Community at a Time.
             </h1>
-            <p className="text-lg md:text-xl text-foreground/80 mb-8 text-balance">
-              LifeLine by NPHN is a movement of people, brands, and communities working hand-in-hand to solve real problems from access to clean water to healthcare, and beyond.
-              Because every community deserves a lifeline.
+            <p className="text-lg md:text-xl text-foreground/80 mb-8">
+              LifeLine by NPHN is a movement of people, brands, and communities working hand-in-hand to solve real problems—from access to clean water to healthcare, and beyond.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
@@ -70,163 +85,137 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-
-      {/* <section className="py-12 md:py-16 bg-foreground text-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-secondary mb-2">50K+</div>
-              <p className="text-sm md:text-base opacity-80">Lives Impacted</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-secondary mb-2">25+</div>
-              <p className="text-sm md:text-base opacity-80">Communities Served</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-secondary mb-2">100+</div>
-              <p className="text-sm md:text-base opacity-80">Healthcare Workers</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-secondary mb-2">₦2.5B</div>
-              <p className="text-sm md:text-base opacity-80">Funds Distributed</p>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
-      {/* Problem Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">Why We Exist</h2>
-            <p className="text-lg text-foreground/80 mb-6">
-              Every day, communities across Nigeria face challenges from access to clean water to education and healthcare.LifeLine is building a bridge between purpose-driven people, brands, and causes — creating local solutions for local problems.
+      {/* WHY WE EXIST */}
+      <section className="py-24 bg-muted/50 min-h-[100vh] flex items-center">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6 text-foreground">Why We Exist</h2>
+            <p className="text-lg text-foreground/80 mb-8">
+              Every day, communities across Nigeria face challenges—from access to clean water to education and healthcare. LifeLine connects purpose-driven people, brands, and causes to create local solutions for local problems.
             </p>
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                  ✓
-                </div>
-                <p className="text-foreground/80">
-                  Only 40% of rural communities have access to primary healthcare facilities
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                  ✓
-                </div>
-                <p className="text-foreground/80">
-                  Healthcare costs consume 30% of household income for vulnerable populations
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                  ✓
-                </div>
-                <p className="text-foreground/80">
-                  Preventable diseases remain leading causes of death due to lack of awareness
-                </p>
-              </div>
-            </div>
+            <ul className="space-y-4">
+              {[
+                "Only 40% of rural communities have access to primary healthcare facilities.",
+                "Healthcare costs consume 30% of household income for vulnerable populations.",
+                "Preventable diseases remain leading causes of death due to lack of awareness."
+              ].map((point, i) => (
+                <li key={i} className="flex gap-4 items-start">
+                  <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">✓</div>
+                  <p className="text-foreground/80">{point}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-16 md:py-24 bg-muted/50">
+      {/* HOW KWANDA WORKS (vill.PNG) */}
+      <section className="py-24 bg-background min-h-[100vh] flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-center">How LifeLine Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <h2 className="text-4xl font-bold text-center mb-12">How Kwanda Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: HandshakeIcon,
-                title: "Collaborate",
-                description: "We partner with brands creating purposeful products.",
+                title: "Step 1 - Join our village",
+                description:
+                  "Contribute a monthly pledge (minimum is $5). You’ll be providing access to education for children, capital for local innovators, and more.",
+                cta: "Start contributing",
               },
               {
-                icon: HeartPlusIcon,
-                title: "Support",
-                description: "You donate or buy these products, knowing every naira goes toward impact.",
+                title: "Step 2 - Get voting rights",
+                description:
+                  "You’ll be issued voting rights to help decide which projects and investments we fund collectively.",
+                cta: "Join the village",
               },
               {
-                icon: TrendingUp,
-                title: "Change Lives",
-                description: "Together, we fund projects solving real local problems."
+                title: "Step 3 - Track your impact",
+                description:
+                  "Get direct access to our impact and financial data and receive updates on the projects you helped fund.",
+                cta: "Make an impact",
               },
-              { icon: Zap, title: "Impact", description: "Real lives are changed through accessible healthcare" },
             ].map((item, index) => (
-              <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow">
-                <item.icon className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                <p className="text-sm text-foreground/80">{item.description}</p>
+              <Card key={index} className="p-8 text-center hover:shadow-lg transition">
+                <h3 className="font-semibold text-xl mb-4">{item.title}</h3>
+                <p className="text-foreground/80 mb-6">{item.description}</p>
+                <Button variant="outline">{item.cta}</Button>
               </Card>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Featured Products</h2>
-            <Button asChild variant="outline">
-              <Link href="/shop">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+          <div className="text-center mt-12">
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+              Get started
             </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { name: "Wellness Kit", price: "₦5,000", description: "Essential health supplies for families" },
-              {
-                name: "Medical Supplies Bundle",
-                price: "₦12,000",
-                description: "Professional-grade medical equipment",
-              },
-              {
-                name: "Community Health Program",
-                price: "₦25,000",
-                description: "Support a full health education program",
-              },
-            ].map((product, index) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                  <div className="text-6xl opacity-20">📦</div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                  <p className="text-sm text-foreground/80 mb-4">{product.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-primary">{product.price}</span>
-                    <Button asChild size="sm">
-                      <Link href="/shop">View</Link>
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
+            <p className="mt-4 text-foreground/70">
+              Already a villager?{" "}
+              <Link href="/signin" className="underline">
+                Sign in
+              </Link>
+            </p>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Make a Difference?</h2>
-          <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-            Join thousands of supporters bringing quality healthcare to underserved communities. Every contribution
-            matters.
-          </p>
-          <Button asChild size="lg" variant="secondary">
-            <Link href="/donate">Donate Now</Link>
+      {/* COLLECTIVE PHILANTHROPY CTA (foot.PNG) */}
+      <section className="min-h-[80vh] flex flex-col justify-center items-center bg-muted text-center">
+        <h2 className="text-4xl md:text-5xl font-bold mb-8">
+          Experience the Power of Collective Philanthropy
+        </h2>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <Button size="lg" className="bg-primary hover:bg-primary/90">
+            Join the village
+          </Button>
+          <Button size="lg" variant="outline">
+            Make a one-time gift
           </Button>
         </div>
+        <p className="text-foreground/70">
+          Already a villager?{" "}
+          <Link href="/signin" className="underline">
+            Sign in
+          </Link>
+        </p>
       </section>
 
-      {/* Newsletter */}
-      <section className="py-16 md:py-24 bg-muted/50">
+       {/* FAQ SECTION WITH ANIMATION */}
+      <section className="min-h-[100vh] py-24 flex items-center bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-bold mb-10">Frequently Asked Questions</h2>
+          <div className="max-w-3xl mx-auto space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="border border-border rounded-lg overflow-hidden text-left">
+                <button
+                  onClick={() => setOpenFAQ(openFAQ === i ? null : i)}
+                  className="w-full flex justify-between items-center p-6 font-medium text-lg text-foreground hover:bg-muted/50 transition"
+                >
+                  {faq.q}
+                  <ChevronDown
+                    className={`h-5 w-5 transition-transform ${openFAQ === i ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {openFAQ === i && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="p-6 pt-0 text-foreground/80">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* NEWSLETTER */}
+      <section className="py-24 bg-muted/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-md mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Stay Updated</h2>
