@@ -30,7 +30,7 @@ const causes = [
     description:
       "Vocational training for displaced youths. We equip former child laborers with technical and entrepreneurial skills for a better future.",
     amount: "₦2,550,000",
-    country: "NG",
+    country: "Nigeria",
     image: "placeholder.svg",
     impact:
       "Every ₦5,000 helps one young person learn a trade and regain dignity.",

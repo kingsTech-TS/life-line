@@ -26,7 +26,7 @@ export default function Header() {
     {
       label: "Impact",
       submenu: [
-        { href: "/impact?section=impact-report", label: "Our Impact Report" },
+        { href: "/impact-report", label: "Our Impact Report" },
         { href: "/donations", label: "Donations" },
         { href: "/projects", label: "Projects" },
       ],
