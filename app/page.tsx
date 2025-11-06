@@ -9,11 +9,14 @@ import {
   TrendingUp,
   Zap,
   HandshakeIcon,
-  ChevronDown
+  ChevronDown,
+  Users,
+  Heart
 } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Card } from "../components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
+import DonationsSection from "../components/DonationsSection"
 
 export default function Home() {
   const [email, setEmail] = useState("")
@@ -57,6 +60,8 @@ export default function Home() {
     { q: "Is Lifeline a registered charity?", a: "Yes, Lifeline is a legally registered non-profit organization." },
     { q: "How does Lifeline select and vet project partners?", a: "We carefully evaluate partners based on credibility, track record, and alignment with our impact goals." },
   ]
+
+  
 
   return (
     <main className="min-h-screen">
@@ -109,10 +114,54 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HOW KWANDA WORKS (vill.PNG) */}
+
+      
+  {/* How It Works */}
+<section className="py-16 md:py-24 bg-muted/50">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12">
+      How LifeLine Works
+    </h2>
+
+    <div className="flex flex-wrap justify-center gap-8">
+      {[
+        {
+          icon: Heart,
+          title: "Collaborate",
+          description: "We partner with brands creating purposeful products.",
+        },
+        {
+          icon: Users,
+          title: "Support",
+          description: "You donate or buy these products, knowing every naira goes toward impact.",
+        },
+        {
+          icon: TrendingUp,
+          title: "Change Lives",
+          description: "Together, we fund projects solving real local problems.",
+        },
+      ].map((item, index) => (
+        <Card
+          key={index}
+          className="p-10 w-full sm:w-[380px] md:w-[400px] text-center hover:shadow-xl transition-shadow rounded-2xl"
+        >
+          <item.icon className="h-14 w-14 text-primary mx-auto mb-5" />
+          <h3 className="font-semibold text-2xl mb-3 text-foreground">{item.title}</h3>
+          <p className="text-foreground/80 text-base leading-relaxed">{item.description}</p>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>
+
+
+     {/* Be Someone’s Lifeline */}
+      <DonationsSection />
+
+      {/* HOW Lifelline WORKS (vill.PNG) */}
       <section className="py-24 bg-background min-h-[100vh] flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center mb-12">How Kwanda Works</h2>
+          <h2 className="text-4xl font-bold text-center mb-12">How Lifelline Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -213,6 +262,56 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+    {/* OPEN LEDGER SECTION */}
+<section className="min-h-[100vh] flex items-center bg-background border-t border-border">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 className="text-5xl font-extrabold mb-10 text-foreground">Our Open Ledger</h2>
+
+    <Button variant="outline" size="lg" className="mb-16">
+      View transactions
+    </Button>
+
+    <div className="max-w-2xl mx-auto space-y-8 text-left text-lg">
+      <div className="flex justify-between items-center border-b border-border pb-5">
+        <div className="flex items-center gap-3">
+          <TrendingUp className="h-6 w-6 text-primary" />
+          <span className="font-semibold text-foreground text-xl">Our Target</span>
+        </div>
+        <span className="font-bold text-foreground text-xl">$29,438</span>
+      </div>
+
+      <div className="flex justify-between items-center border-b border-border pb-5">
+        <div className="flex items-center gap-3">
+          <HeartPlusIcon className="h-6 w-6 text-secondary" />
+          <span className="font-semibold text-foreground text-xl">Your Contributions</span>
+        </div>
+        <span className="font-bold text-foreground text-xl">$10,146</span>
+      </div>
+
+      <div className="flex justify-between items-center border-b border-border pb-5">
+        <div className="flex items-center gap-3">
+          <HandshakeIcon className="h-6 w-6 text-green-600" />
+          <span className="font-semibold text-foreground text-xl">Lives Touched</span>
+        </div>
+        <span className="font-bold text-foreground text-xl">1,891</span>
+      </div>
+    </div>
+
+    <p className="mt-16 text-foreground/80 text-lg">
+      Join a growing community of changemakers transforming lives every day.
+    </p>
+
+    <Button
+      size="lg"
+      className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground px-10 py-6 text-lg rounded-xl"
+    >
+      Get started
+    </Button>
+  </div>
+</section>
+
+
 
       {/* NEWSLETTER */}
       <section className="py-24 bg-muted/50">
