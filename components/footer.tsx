@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-foreground font-bold">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-foreground font-bold">//the logo
                 L
               </div>
               <span className="font-bold">LifeLine</span>

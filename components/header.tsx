@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { Menu, X, ChevronDown } from "lucide-react"
 import { Button } from "./ui/button"
+import Image from "next/image"
 
 
 export default function Header() {
@@ -38,13 +39,18 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-              L
-            </div>
-            <span className="hidden font-bold text-foreground sm:inline-block">LifeLine</span>
+          <Link href="/" className="flex items-center gap-6">
+            <Image
+              src="/logo/logo.png"
+              alt="LifeLine Logo"
+              width={400}       // Next.js optimization hint
+              height={400}
+              className="h-48 w-auto sm:h-56 md:h-64 lg:h-72 rounded-2xl"
+            />
           </Link>
+
+
+
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
