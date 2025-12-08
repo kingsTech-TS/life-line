@@ -51,6 +51,9 @@ export default function RootLayout({
           }}
         />
 
+        <script src="https://js.paystack.co/v1/inline.js"></script>
+
+
         <Script
           id="meta-pixel"
           strategy="afterInteractive"

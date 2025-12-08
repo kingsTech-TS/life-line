@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Heart } from "lucide-react"
 import { Card } from "../../components/ui/card"
 import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group"
@@ -8,6 +9,7 @@ import { Button } from "../../components/ui/button"
 
 export default function Donate() {
   const [donationType, setDonationType] = useState("one-time")
+  const router = useRouter()
   const [amount, setAmount] = useState(5000)
   const [customAmount, setCustomAmount] = useState("")
   const [donorName, setDonorName] = useState("")
@@ -16,64 +18,44 @@ export default function Donate() {
 
   const presetAmounts = [1000, 5000, 10000, 25000, 50000]
 
-  const handleDonate = async () => {
+  const handleDonate = () => {
     if (!donorName || !donorEmail) {
       alert("Please fill in your name and email")
       return
     }
 
+    const finalAmount = customAmount ? parseInt(customAmount) : amount
+
     setIsProcessing(true)
-    const finalAmount = customAmount ? Number.parseInt(customAmount) : amount
 
-    try {
-      // Track donation event
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        ;(window as any).gtag("event", "donation_initiated", {
-          value: finalAmount,
-          currency: "NGN",
-          donation_type: donationType,
-        })
-      }
-
-      // Track Meta Pixel event
-      if (typeof window !== "undefined" && (window as any).fbq) {
-        ;(window as any).fbq("track", "Donate", {
-          value: finalAmount / 100,
-          currency: "NGN",
-        })
-      }
-
-      const response = await fetch("/api/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: finalAmount,
-          email: donorEmail,
-          metadata: {
-            name: donorName,
-            type: donationType,
-          },
-        }),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        alert(`Donation of ₦${finalAmount.toLocaleString()} initiated successfully!`)
-        // Reset form
-        setDonorName("")
-        setDonorEmail("")
-        setCustomAmount("")
-        setAmount(5000)
-      } else {
-        alert("Failed to process donation. Please try again.")
-      }
-    } catch (error) {
-      console.error("Donation error:", error)
-      alert("An error occurred. Please try again.")
-    } finally {
+    if (!(window as any).PaystackPop) {
+      alert("Paystack is not loaded")
       setIsProcessing(false)
+      return
     }
+
+    const handler = (window as any).PaystackPop.setup({
+      key: process.env.NEXT_PUBLIC_PAYSTACK_KEY,
+      email: donorEmail,
+      amount: finalAmount * 100, // Paystack expects kobo
+      metadata: {
+        custom_fields: [
+          {
+            display_name: donorName,
+            donation_type: donationType,
+          },
+        ],
+      },
+      callback: function (response: any) {
+        router.push(`/donate/success?ref=${response.reference}`)
+      },
+      onClose: function () {
+        router.push("/donate/failure")
+      },
+    })
+
+    handler.openIframe()
+    setIsProcessing(false)
   }
 
   return (
@@ -155,17 +137,6 @@ export default function Donate() {
                 </div>
               </div>
 
-              {/* Impact Info */}
-              <div className="mb-8 p-4 bg-secondary/10 rounded-lg border border-secondary/20">
-                <h3 className="font-semibold text-foreground mb-3">Your Impact</h3>
-                <ul className="space-y-2 text-sm text-foreground/80">
-                  <li>• ₦1,000 provides basic health screening for 5 people</li>
-                  <li>• ₦5,000 supplies a community health worker for a week</li>
-                  <li>• ₦10,000 funds a health education workshop</li>
-                  <li>• ₦25,000 supports maternal health services for a month</li>
-                </ul>
-              </div>
-
               {/* Donor Info */}
               <div className="mb-8 space-y-4">
                 <h2 className="text-xl font-semibold text-foreground">Donor Information</h2>
@@ -206,30 +177,6 @@ export default function Donate() {
                 Your donation is secure and processed through our trusted payment partners.
               </p>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Donate */}
-      <section className="py-16 md:py-24 bg-muted/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-center">Why Support LifeLine?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="font-semibold text-lg mb-2">Direct Impact</h3>
-              <p className="text-foreground/80">100% of donations go directly to healthcare programs and services.</p>
-            </div>
-            <div>
-              <div className="text-4xl mb-4">📊</div>
-              <h3 className="font-semibold text-lg mb-2">Transparent Reporting</h3>
-              <p className="text-foreground/80">We provide detailed reports on how your funds are utilized.</p>
-            </div>
-            <div>
-              <div className="text-4xl mb-4">🤝</div>
-              <h3 className="font-semibold text-lg mb-2">Community-Driven</h3>
-              <p className="text-foreground/80">We work with communities to ensure sustainable, lasting change.</p>
-            </div>
           </div>
         </div>
       </section>
