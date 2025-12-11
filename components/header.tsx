@@ -30,6 +30,7 @@ export default function Header() {
         { href: "/impact-report", label: "Our Impact Report" },
         { href: "/donations", label: "Donations" },
         { href: "/projects", label: "Projects" },
+        { href: "/blog", label: "Blog" },
       ],
     },
     { href: "/finances", label: "Finances" },
