@@ -1,7 +1,6 @@
-
-import { Mail, Phone, MapPin, Clock } from "lucide-react"
-import { Card } from "../../components/ui/card"
-import { Button } from "../../components/ui/button"
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Contact() {
   return (
@@ -10,7 +9,9 @@ export default function Contact() {
       <section className="py-12 md:py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Get in Touch</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Get in Touch
+            </h1>
             <p className="text-lg text-foreground/80">
               Have questions? We'd love to hear from you. Reach out to our team.
             </p>
@@ -24,12 +25,16 @@ export default function Contact() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Contact Information */}
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">Contact Information</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
+                Contact Information
+              </h2>
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                    <h3 className="font-semibold text-foreground mb-1">
+                      Email
+                    </h3>
                     <a
                       href="mailto:hello@lifeline.ng"
                       className="text-foreground/80 hover:text-primary transition-colors"
@@ -41,8 +46,13 @@ export default function Contact() {
                 <div className="flex gap-4">
                   <Phone className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Phone</h3>
-                    <a href="tel:+2341234567890" className="text-foreground/80 hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-foreground mb-1">
+                      Phone
+                    </h3>
+                    <a
+                      href="tel:+2341234567890"
+                      className="text-foreground/80 hover:text-primary transition-colors"
+                    >
                       +234 (0) 123 456 7890
                     </a>
                   </div>
@@ -50,7 +60,9 @@ export default function Contact() {
                 <div className="flex gap-4">
                   <MapPin className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Address</h3>
+                    <h3 className="font-semibold text-foreground mb-1">
+                      Address
+                    </h3>
                     <p className="text-foreground/80">
                       123 Health Street
                       <br />
@@ -61,7 +73,9 @@ export default function Contact() {
                 <div className="flex gap-4">
                   <Clock className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Business Hours</h3>
+                    <h3 className="font-semibold text-foreground mb-1">
+                      Business Hours
+                    </h3>
                     <p className="text-foreground/80">
                       Monday - Friday: 9:00 AM - 5:00 PM
                       <br />
@@ -77,10 +91,14 @@ export default function Contact() {
             {/* Contact Form */}
             <div>
               <Card className="p-8">
-                <h2 className="text-2xl font-bold text-foreground mb-6">Send us a Message</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-6">
+                  Send us a Message
+                </h2>
                 <form className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Name</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Name
+                    </label>
                     <input
                       type="text"
                       placeholder="Your name"
@@ -89,7 +107,9 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Email</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Email
+                    </label>
                     <input
                       type="email"
                       placeholder="your@email.com"
@@ -98,7 +118,9 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Subject</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Subject
+                    </label>
                     <input
                       type="text"
                       placeholder="How can we help?"
@@ -107,7 +129,9 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Message</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Message
+                    </label>
                     <textarea
                       placeholder="Your message..."
                       rows={5}
@@ -115,7 +139,10 @@ export default function Contact() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+                  <Button
+                    type="submit"
+                    className="w-full bg-primary hover:bg-primary/90"
+                  >
                     Send Message
                   </Button>
                 </form>
@@ -159,5 +186,5 @@ export default function Contact() {
         </div>
       </section>
     </main>
-  )
+  );
 }

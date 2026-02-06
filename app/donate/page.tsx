@@ -1,37 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Heart } from "lucide-react"
-import { Card } from "../../components/ui/card"
-import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group"
-import { Button } from "../../components/ui/button"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
 export default function Donate() {
-  const [donationType, setDonationType] = useState("one-time")
-  const router = useRouter()
-  const [amount, setAmount] = useState(5000)
-  const [customAmount, setCustomAmount] = useState("")
-  const [donorName, setDonorName] = useState("")
-  const [donorEmail, setDonorEmail] = useState("")
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [donationType, setDonationType] = useState("one-time");
+  const router = useRouter();
+  const [amount, setAmount] = useState(5000);
+  const [customAmount, setCustomAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const presetAmounts = [1000, 5000, 10000, 25000, 50000]
+  const presetAmounts = [1000, 5000, 10000, 25000, 50000];
 
   const handleDonate = () => {
     if (!donorName || !donorEmail) {
-      alert("Please fill in your name and email")
-      return
+      toast.error("Please fill in your name and email");
+      return;
     }
 
-    const finalAmount = customAmount ? parseInt(customAmount) : amount
+    const finalAmount = customAmount ? parseInt(customAmount) : amount;
 
-    setIsProcessing(true)
+    setIsProcessing(true);
 
     if (!(window as any).PaystackPop) {
-      alert("Paystack is not loaded")
-      setIsProcessing(false)
-      return
+      toast.error("Payment system failed to load. Please refresh.");
+      setIsProcessing(false);
+      return;
     }
 
     const handler = (window as any).PaystackPop.setup({
@@ -47,16 +48,16 @@ export default function Donate() {
         ],
       },
       callback: function (response: any) {
-        router.push(`/donate/success?ref=${response.reference}`)
+        router.push(`/donate/success?ref=${response.reference}`);
       },
       onClose: function () {
-        router.push("/donate/failure")
+        router.push("/donate/failure");
       },
-    })
+    });
 
-    handler.openIframe()
-    setIsProcessing(false)
-  }
+    handler.openIframe();
+    setIsProcessing(false);
+  };
 
   return (
     <main className="min-h-screen">
@@ -64,9 +65,12 @@ export default function Donate() {
       <section className="py-12 md:py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Make a Donation</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Make a Donation
+            </h1>
             <p className="text-lg text-foreground/80">
-              Your generous contribution directly supports healthcare initiatives in underserved communities.
+              Your generous contribution directly supports healthcare
+              initiatives in underserved communities.
             </p>
           </div>
         </div>
@@ -79,8 +83,13 @@ export default function Donate() {
             <Card className="p-8">
               {/* Donation Type */}
               <div className="mb-8">
-                <h2 className="text-xl font-semibold text-foreground mb-4">Donation Type</h2>
-                <RadioGroup value={donationType} onValueChange={setDonationType}>
+                <h2 className="text-xl font-semibold text-foreground mb-4">
+                  Donation Type
+                </h2>
+                <RadioGroup
+                  value={donationType}
+                  onValueChange={setDonationType}
+                >
                   <div className="flex items-center space-x-2 mb-3">
                     <RadioGroupItem value="one-time" id="one-time" />
                     <label htmlFor="one-time" className="cursor-pointer">
@@ -98,14 +107,16 @@ export default function Donate() {
 
               {/* Amount Selection */}
               <div className="mb-8">
-                <h2 className="text-xl font-semibold text-foreground mb-4">Select Amount</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-4">
+                  Select Amount
+                </h2>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
                   {presetAmounts.map((preset) => (
                     <button
                       key={preset}
                       onClick={() => {
-                        setAmount(preset)
-                        setCustomAmount("")
+                        setAmount(preset);
+                        setCustomAmount("");
                       }}
                       className={`p-3 rounded-lg border-2 font-semibold transition-colors ${
                         amount === preset && !customAmount
@@ -120,15 +131,19 @@ export default function Donate() {
 
                 {/* Custom Amount */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Custom Amount</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Custom Amount
+                  </label>
                   <div className="flex gap-2">
-                    <span className="flex items-center px-3 bg-muted text-foreground/60">₦</span>
+                    <span className="flex items-center px-3 bg-muted text-foreground/60">
+                      ₦
+                    </span>
                     <input
                       type="number"
                       value={customAmount}
                       onChange={(e) => {
-                        setCustomAmount(e.target.value)
-                        if (e.target.value) setAmount(0)
+                        setCustomAmount(e.target.value);
+                        if (e.target.value) setAmount(0);
                       }}
                       placeholder="Enter custom amount"
                       className="flex-1 px-4 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-foreground/50"
@@ -139,9 +154,13 @@ export default function Donate() {
 
               {/* Donor Info */}
               <div className="mb-8 space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">Donor Information</h2>
+                <h2 className="text-xl font-semibold text-foreground">
+                  Donor Information
+                </h2>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     value={donorName}
@@ -151,7 +170,9 @@ export default function Donate() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     value={donorEmail}
@@ -170,16 +191,19 @@ export default function Donate() {
                 disabled={isProcessing}
               >
                 <Heart className="mr-2 h-5 w-5" />
-                {isProcessing ? "Processing..." : `Donate ₦${customAmount || amount.toLocaleString()}`}
+                {isProcessing
+                  ? "Processing..."
+                  : `Donate ₦${customAmount || amount.toLocaleString()}`}
               </Button>
 
               <p className="text-xs text-foreground/60 text-center mt-4">
-                Your donation is secure and processed through our trusted payment partners.
+                Your donation is secure and processed through our trusted
+                payment partners.
               </p>
             </Card>
           </div>
         </div>
       </section>
     </main>
-  )
+  );
 }

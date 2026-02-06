@@ -1,10 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { ArrowRight, Calendar, User, Clock, Search, ChevronRight } from "lucide-react"
-import { Card } from "../../components/ui/card"
-import { Button } from "../../components/ui/button"
+import { useState } from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Calendar,
+  User,
+  Clock,
+  Search,
+  ChevronRight,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const categories = [
   { name: "All", count: 12 },
@@ -12,7 +19,7 @@ const categories = [
   { name: "Community Stories", count: 3 },
   { name: "News & Updates", count: 3 },
   { name: "Partner Spotlights", count: 2 },
-]
+];
 
 const featuredPost = {
   id: 1,
@@ -24,7 +31,7 @@ const featuredPost = {
   author: "Dr. Amina Okonkwo",
   date: "December 5, 2024",
   readTime: "8 min read",
-}
+};
 
 const blogPosts = [
   {
@@ -63,7 +70,8 @@ const blogPosts = [
   {
     id: 5,
     title: "Maternal Health: Why Every Mother Deserves Quality Care",
-    excerpt: "Exploring the challenges and solutions in maternal healthcare across underserved communities.",
+    excerpt:
+      "Exploring the challenges and solutions in maternal healthcare across underserved communities.",
     image: "/maternal-health-care-africa.jpg",
     category: "Health Tips",
     author: "Midwife Blessing Nwosu",
@@ -73,7 +81,8 @@ const blogPosts = [
   {
     id: 6,
     title: "From Donation to Impact: Tracking Your Contribution",
-    excerpt: "See exactly how your donations are transformed into life-changing healthcare services.",
+    excerpt:
+      "See exactly how your donations are transformed into life-changing healthcare services.",
     image: "/donation-impact-healthcare.jpg",
     category: "News & Updates",
     author: "Finance Team",
@@ -83,26 +92,28 @@ const blogPosts = [
   {
     id: 7,
     title: "Child Vaccination Drives: Protecting the Next Generation",
-    excerpt: "Our immunization campaigns have reached over 10,000 children this year alone.",
+    excerpt:
+      "Our immunization campaigns have reached over 10,000 children this year alone.",
     image: "/child-vaccination-africa.jpg",
     category: "Community Stories",
     author: "Dr. Olumide Bankole",
     date: "November 10, 2024",
     readTime: "5 min read",
   },
-]
+];
 
 export default function BlogPage() {
-  const [activeCategory, setActiveCategory] = useState("All")
-  const [searchQuery, setSearchQuery] = useState("")
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredPosts = blogPosts.filter((post) => {
-    const matchesCategory = activeCategory === "All" || post.category === activeCategory
+    const matchesCategory =
+      activeCategory === "All" || post.category === activeCategory;
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <main className="min-h-screen">
@@ -115,10 +126,12 @@ export default function BlogPage() {
               LifeLine Blog
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 text-balance">
-              Stories of <span className="text-primary">Hope</span> & <span className="text-secondary">Healing</span>
+              Stories of <span className="text-primary">Hope</span> &{" "}
+              <span className="text-secondary">Healing</span>
             </h1>
             <p className="text-lg md:text-xl text-foreground/70 text-pretty">
-              Insights, updates, and inspiring stories from the frontlines of community healthcare in Nigeria.
+              Insights, updates, and inspiring stories from the frontlines of
+              community healthcare in Nigeria.
             </p>
           </div>
         </div>
@@ -142,11 +155,15 @@ export default function BlogPage() {
                   </span>
                 </div>
                 <div className="p-6 md:p-10 flex flex-col justify-center">
-                  <span className="text-secondary font-medium text-sm mb-3">{featuredPost.category}</span>
+                  <span className="text-secondary font-medium text-sm mb-3">
+                    {featuredPost.category}
+                  </span>
                   <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300 text-balance">
                     {featuredPost.title}
                   </h2>
-                  <p className="text-foreground/70 mb-6 text-pretty leading-relaxed">{featuredPost.excerpt}</p>
+                  <p className="text-foreground/70 mb-6 text-pretty leading-relaxed">
+                    {featuredPost.excerpt}
+                  </p>
                   <div className="flex flex-wrap items-center gap-4 text-sm text-foreground/60 mb-6">
                     <span className="flex items-center gap-1.5">
                       <User size={14} />
@@ -162,7 +179,11 @@ export default function BlogPage() {
                     </span>
                   </div>
                   <span className="inline-flex items-center text-primary font-semibold group-hover:gap-3 gap-2 transition-all duration-300">
-                    Read Full Story <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    Read Full Story{" "}
+                    <ArrowRight
+                      size={18}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
                   </span>
                 </div>
               </div>
@@ -177,7 +198,10 @@ export default function BlogPage() {
           <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
             {/* Search */}
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" size={18} />
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40"
+                size={18}
+              />
               <input
                 type="text"
                 placeholder="Search articles..."
@@ -240,7 +264,9 @@ export default function BlogPage() {
                       <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                         {post.title}
                       </h3>
-                      <p className="text-foreground/60 text-sm mb-4 line-clamp-2 leading-relaxed">{post.excerpt}</p>
+                      <p className="text-foreground/60 text-sm mb-4 line-clamp-2 leading-relaxed">
+                        {post.excerpt}
+                      </p>
                       <div className="flex items-center justify-between text-xs text-foreground/50">
                         <span className="flex items-center gap-1">
                           <Calendar size={12} />
@@ -258,13 +284,15 @@ export default function BlogPage() {
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-foreground/60 text-lg">No articles found matching your criteria.</p>
+              <p className="text-foreground/60 text-lg">
+                No articles found matching your criteria.
+              </p>
               <Button
                 variant="outline"
                 className="mt-4 bg-transparent"
                 onClick={() => {
-                  setActiveCategory("All")
-                  setSearchQuery("")
+                  setActiveCategory("All");
+                  setSearchQuery("");
                 }}
               >
                 Clear Filters
@@ -275,9 +303,16 @@ export default function BlogPage() {
           {/* Load More */}
           {filteredPosts.length > 0 && (
             <div className="text-center mt-12">
-              <Button variant="outline" size="lg" className="group bg-transparent">
+              <Button
+                variant="outline"
+                size="lg"
+                className="group bg-transparent"
+              >
                 Load More Articles
-                <ChevronRight size={18} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight
+                  size={18}
+                  className="ml-1 group-hover:translate-x-1 transition-transform"
+                />
               </Button>
             </div>
           )}
@@ -289,10 +324,12 @@ export default function BlogPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.1),transparent_50%)]" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">Never Miss an Update</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+              Never Miss an Update
+            </h2>
             <p className="text-primary-foreground/80 mb-8 text-lg">
-              Subscribe to our newsletter for the latest stories, health tips, and impact updates delivered to your
-              inbox.
+              Subscribe to our newsletter for the latest stories, health tips,
+              and impact updates delivered to your inbox.
             </p>
             <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
@@ -300,7 +337,11 @@ export default function BlogPage() {
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-white/30"
               />
-              <Button variant="secondary" size="lg" className="whitespace-nowrap shadow-lg">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="whitespace-nowrap shadow-lg"
+              >
                 Subscribe
               </Button>
             </form>
@@ -308,5 +349,5 @@ export default function BlogPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

@@ -1,15 +1,19 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState } from "react"
-import { Menu, X, ChevronDown } from "lucide-react"
-import { Button } from "./ui/button"
-import Image from "next/image"
-
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useState } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { Button } from "./ui/button";
+import Image from "next/image";
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const pathname = usePathname();
+  const isAdminPage = pathname?.startsWith("/admin");
+
+  if (isAdminPage) return null;
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -34,7 +38,7 @@ export default function Header() {
       ],
     },
     { href: "/finances", label: "Finances" },
-  ]
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -44,14 +48,11 @@ export default function Header() {
             <Image
               src="/logo/logo.png"
               alt="LifeLine Logo"
-              width={400}       // Next.js optimization hint
-              height={400}
-              className="h-48 w-auto sm:h-56 md:h-64 lg:h-72 rounded-2xl"
+              width={150} // Reduced width
+              height={50} // Fixed height to fit header
+              className="h-12 w-auto rounded-xl" // Much smaller height
             />
           </Link>
-
-
-
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
@@ -89,13 +90,17 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button asChild variant="outline" size="sm" className="bg-primary hover:bg-primary/90 text-white">
+            <Button asChild variant="default" size="sm">
               <Link href="/donate">Donate Now</Link>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+          <button
+            className="md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -108,11 +113,20 @@ export default function Header() {
                 {"submenu" in link ? (
                   <>
                     <button
-                      onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                      onClick={() =>
+                        setOpenDropdown(
+                          openDropdown === link.label ? null : link.label,
+                        )
+                      }
                       className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-md flex items-center justify-between"
                     >
                       {link.label}
-                      <ChevronDown size={16} className={openDropdown === link.label ? "rotate-180" : ""} />
+                      <ChevronDown
+                        size={16}
+                        className={
+                          openDropdown === link.label ? "rotate-180" : ""
+                        }
+                      />
                     </button>
                     {openDropdown === link.label && (
                       <div className="ml-4 space-y-1">
@@ -147,5 +161,5 @@ export default function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }

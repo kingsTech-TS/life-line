@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Button } from "../../components/ui/button";
-import { Card } from "../../components/ui/card";
-
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const projects = [
   {
@@ -39,7 +38,7 @@ const projects = [
     location: "Kaduna, Nigeria",
     impact: "15 communities served",
   },
-   {
+  {
     title: "Maternal Health Initiative",
     description:
       "Providing safe delivery kits and prenatal care education to reduce maternal mortality rates.",
