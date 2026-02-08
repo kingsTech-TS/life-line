@@ -94,12 +94,12 @@ export default function Home() {
                 variant="outline"
                 className="bg-primary text-white hover:bg-white hover:text-black"
               >
-                <Link href="/donate">
+                <Link href="/partners">
                   Join as a Partner <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/about">Support with a Donation</Link>
+                <Link href="/donate">Support with a Donation</Link>
               </Button>
             </div>
           </div>
