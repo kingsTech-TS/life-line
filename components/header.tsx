@@ -17,15 +17,7 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    {
-      label: "About",
-      submenu: [
-        { href: "/about?section=about-lifeline", label: "About LifeLine" },
-        { href: "/about?section=about-nphn", label: "About NPHN" },
-        { href: "/meet-team", label: "Meet the Team" },
-        { href: "/why-exist", label: "Why We Exist" },
-      ],
-    },
+    { href: "/about", label: "About" },
     { href: "/shop", label: "Shop" },
     { href: "/donate", label: "Donate" },
     {

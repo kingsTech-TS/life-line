@@ -1,4 +1,4 @@
-import MeetTeamClient from "./team-client";
+import MeetTeamClient from "../about/team-client";
 
 export const metadata = {
   title: "Meet the Team | LifeLine",

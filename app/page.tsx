@@ -205,7 +205,7 @@ export default function Home() {
                 description:
                   "We believe change grows stronger when hands join. Partner with us as a brand, organization, or startup to create meaningful products and campaigns that give life back to those who need it most.",
                 cta: "Start a Partnership",
-                href: "/partner",
+                href: "/partners",
               },
               {
                 title: "Step 3 - Be the Voice",
