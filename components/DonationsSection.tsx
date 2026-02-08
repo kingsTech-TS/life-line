@@ -69,14 +69,6 @@ export default function DonationsSection() {
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-4xl mx-auto text-center mb-24 space-y-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4"
-          >
-            <Heart size={12} className="fill-current" />
-            Live Impact Stories
-          </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -169,97 +161,109 @@ export default function DonationsSection() {
       {/* Premium Dialog */}
       <AnimatePresence>
         {selectedCause && (
-          <Dialog
-            open={!!selectedCause}
-            onOpenChange={() => setSelectedCause(null)}
-          >
-            <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-[3rem] border-none shadow-2xl bg-background outline-none">
-              <div className="flex flex-col md:flex-row h-[90vh] md:h-auto">
-                {/* Dialog Image Section */}
-                <div className="relative w-full md:w-1/2 h-64 md:h-auto overflow-hidden">
+          <Dialog open onOpenChange={() => setSelectedCause(null)}>
+            <DialogContent
+              className="
+          max-w-5xl w-[96vw] md:w-full
+          h-[100dvh] md:h-[85vh]
+          max-h-[100dvh]
+          p-0 overflow-hidden
+          rounded-none md:rounded-[3rem]
+          border-none shadow-2xl bg-background
+          flex flex-col
+        "
+            >
+              <div className="flex flex-col md:flex-row h-full">
+                {/* Image Section */}
+                <div className="relative w-full md:w-1/2 h-48 sm:h-56 md:h-full shrink-0">
                   <Image
                     src={selectedCause.image}
                     alt={selectedCause.title}
                     fill
+                    priority
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent md:bg-gradient-to-b" />
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent md:bg-gradient-to-r md:from-black/40 md:to-transparent" />
+
+                  {/* Unified Close Button */}
                   <button
                     onClick={() => setSelectedCause(null)}
-                    className="absolute top-6 left-6 p-2 rounded-full bg-black/20 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 transition-all md:hidden"
+                    className="absolute top-4 left-4 p-2 rounded-full bg-black/40 backdrop-blur text-white hover:bg-black/60 transition z-20"
                   >
                     <X size={20} />
                   </button>
                 </div>
 
-                {/* Dialog Content Section */}
-                <div className="w-full md:w-1/2 p-10 md:p-14 flex flex-col justify-between space-y-8 bg-background relative">
-                  <button
-                    onClick={() => setSelectedCause(null)}
-                    className="absolute top-8 right-8 p-2 rounded-full hover:bg-muted text-foreground/40 transition-colors hidden md:block"
-                  >
-                    <X size={24} />
-                  </button>
+                {/* Content Section */}
+                <div
+                  className="
+              relative w-full md:w-1/2
+              flex flex-col
+              bg-background
+              overflow-y-auto overscroll-contain
+            "
+                >
+                  <div className="px-5 py-6 sm:p-8 md:p-10 lg:p-12 flex flex-col gap-6 min-h-full">
+                    <div className="space-y-6">
+                      <div className="inline-flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px] sm:text-xs">
+                        <Target size={14} />
+                        Active Project
+                      </div>
 
-                  <div className="space-y-6">
-                    <div className="inline-flex items-center gap-2 text-primary font-black uppercase tracking-widest text-xs">
-                      <Target size={16} />
-                      Active Project
-                    </div>
-                    <DialogHeader>
-                      <DialogTitle className="text-4xl md:text-5xl font-black tracking-tighter leading-tight">
-                        {selectedCause.title}
-                      </DialogTitle>
-                    </DialogHeader>
+                      <DialogHeader className="p-0">
+                        <DialogTitle className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+                          {selectedCause.title}
+                        </DialogTitle>
+                      </DialogHeader>
 
-                    <div className="flex gap-4">
-                      <div className="flex-1 p-4 rounded-2xl bg-muted/50 border border-border">
-                        <div className="text-primary font-black text-xl mb-1">
-                          {selectedCause.amount}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 sm:p-4 rounded-xl bg-muted/50 border">
+                          <div className="text-primary font-black text-lg sm:text-xl">
+                            {selectedCause.amount}
+                          </div>
+                          <div className="text-[10px] font-black uppercase text-foreground/40 tracking-widest">
+                            Goal Amount
+                          </div>
                         </div>
-                        <div className="text-[10px] font-black uppercase text-foreground/40 tracking-widest">
-                          Goal Amount
+
+                        <div className="p-3 sm:p-4 rounded-xl bg-muted/50 border">
+                          <div className="font-black text-lg sm:text-xl">
+                            {selectedCause.country.split(",")[0]}
+                          </div>
+                          <div className="text-[10px] font-black uppercase text-foreground/40 tracking-widest">
+                            Location
+                          </div>
                         </div>
                       </div>
-                      <div className="flex-1 p-4 rounded-2xl bg-muted/50 border border-border">
-                        <div className="text-foreground font-black text-xl mb-1">
-                          {selectedCause.country.split(",")[0]}
-                        </div>
-                        <div className="text-[10px] font-black uppercase text-foreground/40 tracking-widest">
-                          Location
-                        </div>
-                      </div>
-                    </div>
 
-                    <p className="text-lg text-foreground/60 font-medium leading-relaxed">
-                      {selectedCause.description}
-                    </p>
-
-                    <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10 flex gap-4 items-start">
-                      <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
-                        <ShieldCheck size={20} />
-                      </div>
-                      <p className="text-sm font-bold text-foreground/70 italic">
-                        "{selectedCause.impact}"
+                      <p className="text-sm sm:text-base md:text-lg text-foreground/60 leading-relaxed">
+                        {selectedCause.description}
                       </p>
-                    </div>
-                  </div>
 
-                  <div className="space-y-4 pt-4">
-                    <Button
-                      size="lg"
-                      className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
-                      onClick={() =>
-                        alert(
-                          `Redirecting to payment for ${selectedCause.title}...`,
-                        )
-                      }
-                    >
-                      Donate Now
-                    </Button>
-                    <div className="flex items-center justify-center gap-2 text-xs font-black text-foreground/30 uppercase tracking-[0.1em]">
-                      <Users size={14} />
-                      Join 1,200+ other lifeliners
+                      <div className="p-4 sm:p-5 rounded-2xl bg-primary/5 border border-primary/10 flex gap-3">
+                        <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <ShieldCheck size={18} />
+                        </div>
+                        <p className="text-sm font-bold text-foreground/70 italic">
+                          "{selectedCause.impact}"
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* CTA pinned naturally at bottom */}
+                    <div className="pt-6 mt-auto space-y-4">
+                      <Button
+                        size="lg"
+                        className="w-full h-14 sm:h-16 rounded-xl bg-primary text-white font-black shadow-xl hover:scale-[1.02] active:scale-95 transition"
+                      >
+                        Donate Now
+                      </Button>
+
+                      <div className="flex justify-center items-center gap-2 text-[10px] sm:text-xs font-black text-foreground/30 uppercase tracking-widest">
+                        <Users size={12} />
+                        Join 1,200+ lifeliners
+                      </div>
                     </div>
                   </div>
                 </div>

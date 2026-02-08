@@ -38,67 +38,68 @@ export default function PartnersPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-[-10%] w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
+      <section className="relative overflow-hidden pt-16 md:pt-24 pb-20 md:pb-32">
+        {/* Background Glow */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            {/* Heading */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="space-y-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6">
-                <Handshake size={14} className="text-primary" />
-                Partner With LifeLine
-              </div>
-              <h1 className="text-5xl md:text-7xl font-black text-foreground mb-6 leading-tight">
+              <h1 className="text-4xl font-black leading-tight text-foreground sm:text-6xl md:text-7xl">
                 Create real health <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   impact. Together.
                 </span>
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+
+              <p className="mx-auto max-w-2xl text-lg font-medium leading-relaxed text-muted-foreground sm:text-xl">
                 LifeLine partners with brands, organizations, and institutions
                 committed to improving access to healthcare in under-resourced
                 communities across Nigeria.
               </p>
             </motion.div>
 
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center pt-4"
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
               <Button
                 asChild
                 size="lg"
-                className="h-14 px-8 rounded-full text-lg font-bold shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all"
+                className="h-14 rounded-full px-8 text-lg font-bold shadow-lg shadow-primary/25 transition hover:shadow-primary/40"
               >
                 <Link href="#opportunities">
-                  Become a Partner <ArrowRight className="ml-2 h-5 w-5" />
+                  Become a Partner
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-14 px-8 rounded-full text-lg font-bold border-2 hover:bg-muted transition-all"
+                className="h-14 rounded-full border-2 px-8 text-lg font-bold transition hover:bg-muted"
               >
                 <Link href="/contact">Talk to the Team</Link>
               </Button>
             </motion.div>
 
+            {/* Supporting Text */}
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="text-sm font-semibold text-muted-foreground/60 max-w-lg mx-auto pt-8"
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+              className="mx-auto mt-10 max-w-lg text-sm font-semibold text-muted-foreground/70"
             >
               We focus on practical solutions, transparent funding, and
               measurable impact — one state at a time.
