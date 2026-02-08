@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -33,78 +33,34 @@ const featuredPost = {
   readTime: "8 min read",
 };
 
-const blogPosts = [
-  {
-    id: 2,
-    title: "5 Essential Health Tips for the Harmattan Season",
-    excerpt:
-      "As the dry season approaches, learn how to protect yourself and your family from common health challenges.",
-    image: "/harmattan-season-health-tips.jpg",
-    category: "Health Tips",
-    author: "Nurse Chioma Eze",
-    date: "December 2, 2024",
-    readTime: "5 min read",
-  },
-  {
-    id: 3,
-    title: "Meet the Heroes: Community Health Workers Making a Difference",
-    excerpt:
-      "Stories of dedication from our frontline healthcare workers who travel miles to serve remote communities.",
-    image: "/community-health-workers-nigeria.jpg",
-    category: "Community Stories",
-    author: "Emmanuel Adeyemi",
-    date: "November 28, 2024",
-    readTime: "6 min read",
-  },
-  {
-    id: 4,
-    title: "NPHN Partnership: Expanding Our Reach Across States",
-    excerpt:
-      "Our collaboration with the National Primary Healthcare Network is bringing systemic change to healthcare delivery.",
-    image: "/healthcare-partnership-meeting.jpg",
-    category: "Partner Spotlights",
-    author: "Dr. Amina Okonkwo",
-    date: "November 25, 2024",
-    readTime: "7 min read",
-  },
-  {
-    id: 5,
-    title: "Maternal Health: Why Every Mother Deserves Quality Care",
-    excerpt:
-      "Exploring the challenges and solutions in maternal healthcare across underserved communities.",
-    image: "/maternal-health-care-africa.jpg",
-    category: "Health Tips",
-    author: "Midwife Blessing Nwosu",
-    date: "November 20, 2024",
-    readTime: "6 min read",
-  },
-  {
-    id: 6,
-    title: "From Donation to Impact: Tracking Your Contribution",
-    excerpt:
-      "See exactly how your donations are transformed into life-changing healthcare services.",
-    image: "/donation-impact-healthcare.jpg",
-    category: "News & Updates",
-    author: "Finance Team",
-    date: "November 15, 2024",
-    readTime: "4 min read",
-  },
-  {
-    id: 7,
-    title: "Child Vaccination Drives: Protecting the Next Generation",
-    excerpt:
-      "Our immunization campaigns have reached over 10,000 children this year alone.",
-    image: "/child-vaccination-africa.jpg",
-    category: "Community Stories",
-    author: "Dr. Olumide Bankole",
-    date: "November 10, 2024",
-    readTime: "5 min read",
-  },
-];
-
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("/api/posts");
+        const data = await response.json();
+        const mappedPosts = data.map((post: any) => ({
+          id: post._id,
+          title: post.title,
+          excerpt: post.excerpt,
+          image: post.image,
+          category: post.category,
+          author: post.author,
+          date: new Date(post.createdAt).toLocaleDateString(),
+          readTime: "5 min read", // Placeholder or calculate
+        }));
+        setBlogPosts(mappedPosts);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   const filteredPosts = blogPosts.filter((post) => {
     const matchesCategory =

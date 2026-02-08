@@ -304,14 +304,14 @@ export default function AdminShop() {
       {/* New Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-          <div className="flex flex-col h-[90vh] md:h-auto max-h-[95vh]">
-            <DialogHeader className="p-8 pb-4 bg-muted/30">
+          <div className="flex flex-col h-[85vh] md:h-auto max-h-[90vh]">
+            <DialogHeader className="p-6 md:p-8 pb-4 bg-muted/30">
               <div className="flex justify-between items-center">
                 <div>
-                  <DialogTitle className="text-3xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">
+                  <DialogTitle className="text-2xl md:text-3xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">
                     Add Product
                   </DialogTitle>
-                  <p className="text-foreground/50 mt-2 font-medium">
+                  <p className="text-foreground/50 mt-2 font-medium text-sm md:text-base">
                     List a new item in the charity shop.
                   </p>
                 </div>
@@ -328,7 +328,7 @@ export default function AdminShop() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex-1 overflow-y-auto p-8 pt-4 space-y-6"
+              className="flex-1 overflow-y-auto p-6 md:p-8 pt-4 space-y-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">

@@ -4,59 +4,45 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-
-const projects = [
-  {
-    title: "Community Health Clinics",
-    description:
-      "Establishing mobile and rural clinics to bring essential healthcare directly to underserved communities.",
-    image: "placeholder.svg",
-    location: "Kano, Nigeria",
-    impact: "10,000+ patients served",
-  },
-  {
-    title: "Maternal Health Initiative",
-    description:
-      "Providing safe delivery kits and prenatal care education to reduce maternal mortality rates.",
-    image: "placeholder.svg",
-    location: "Enugu, Nigeria",
-    impact: "1,200 mothers supported",
-  },
-  {
-    title: "Youth Health Education",
-    description:
-      "Training young leaders to promote hygiene, nutrition, and preventive health in schools.",
-    image: "placeholder.svg",
-    location: "Lagos, Nigeria",
-    impact: "3,500 students reached",
-  },
-  {
-    title: "Clean Water for Health",
-    description:
-      "Installing boreholes and sanitation facilities to reduce waterborne diseases.",
-    image: "placeholder.svg",
-    location: "Kaduna, Nigeria",
-    impact: "15 communities served",
-  },
-  {
-    title: "Maternal Health Initiative",
-    description:
-      "Providing safe delivery kits and prenatal care education to reduce maternal mortality rates.",
-    image: "placeholder.svg",
-    location: "Enugu, Nigeria",
-    impact: "1,200 mothers supported",
-  },
-  {
-    title: "Youth Health Education",
-    description:
-      "Training young leaders to promote hygiene, nutrition, and preventive health in schools.",
-    image: "placeholder.svg",
-    location: "Lagos, Nigeria",
-    impact: "3,500 students reached",
-  },
-];
+import { useEffect, useState } from "react";
 
 export default function ProjectsClient() {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = await response.json();
+
+        const mappedProjects = data.map((project: any) => ({
+          title: project.title,
+          description: project.description,
+          image: project.image,
+          location: project.country,
+          impact: project.impact,
+        }));
+
+        setProjects(mappedProjects);
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-32 text-center text-foreground/70">
+        Loading projects…
+      </div>
+    );
+  }
+
   return (
     <main className="py-20 md:py-28 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -115,10 +101,7 @@ export default function ProjectsClient() {
                   </div>
 
                   <div className="mt-6">
-                    <Button
-                      variant="outline"
-                      className="w-full border-foreground/20 bg-primary hover:bg-primary/90 text-white transition-colors"
-                    >
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-white">
                       Learn More
                     </Button>
                   </div>

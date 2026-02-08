@@ -1,63 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import CartDrawer from "@/components/cart-drawer";
 
-const products = [
-  {
-    id: 1,
-    name: "Basic Wellness Kit",
-    price: 5000,
-    description:
-      "Essential health supplies including vitamins, first aid items, and health education materials.",
-    category: "Wellness",
-  },
-  {
-    id: 2,
-    name: "Medical Supplies Bundle",
-    price: 12000,
-    description:
-      "Professional-grade medical equipment for community health centers.",
-    category: "Medical",
-  },
-  {
-    id: 3,
-    name: "Community Health Program",
-    price: 25000,
-    description: "Support a full health education program for a community.",
-    category: "Programs",
-  },
-  {
-    id: 4,
-    name: "Maternal Health Package",
-    price: 15000,
-    description: "Prenatal care supplies and education for expectant mothers.",
-    category: "Maternal Health",
-  },
-  {
-    id: 5,
-    name: "Child Nutrition Program",
-    price: 8000,
-    description: "Nutritional supplements and education for children.",
-    category: "Nutrition",
-  },
-  {
-    id: 6,
-    name: "Disease Prevention Kit",
-    price: 10000,
-    description:
-      "Preventive health supplies and vaccination support materials.",
-    category: "Prevention",
-  },
-];
-
 export default function Shop() {
   const [cartItems, setCartItems] = useState<number[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [shopProducts, setShopProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/inventory");
+        const data = await response.json();
+        const mappedProducts = data.map((item: any) => ({
+          id: item._id, // Ensure ID handling is consistent (string vs number might be an issue if cart expects numbers)
+          name: item.name,
+          price: item.price,
+          description: item.description,
+          category: item.category,
+        }));
+        setShopProducts(mappedProducts);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Add item to cart
   const addToCart = (id: number) => {
@@ -83,7 +57,7 @@ export default function Shop() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         items={cartItems}
-        products={products}
+        products={shopProducts}
         onRemove={removeItem}
       />
 
@@ -124,7 +98,7 @@ export default function Shop() {
 
           {/* Product Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product, index) => (
+            {shopProducts.map((product, index) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 20 }}

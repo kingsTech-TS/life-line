@@ -4,6 +4,7 @@ import type React from "react"
 import Link from "next/link"
 import { Card } from "../../components/ui/card"
 import { Button } from "../../components/ui/button"
+import { useState, useEffect } from "react"
 
 const stories = [
   {
@@ -57,7 +58,28 @@ const stories = [
 ]
 
 export default function Impact() {
-  return (
+  const [impactStories, setImpactStories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const response = await fetch("/api/impact");
+        const data = await response.json();
+        const mappedStories = data.map((story: any) => ({
+          id: story._id,
+          title: story.title,
+          description: story.description,
+          impact: story.tags[0] || "General Impact",
+          community: "LifeLine Community", // Placeholder as it's not in the model
+        }));
+        setImpactStories(mappedStories);
+      } catch (error) {
+        console.error("Failed to fetch impact stories:", error);
+      }
+    };
+
+    fetchStories();
+  }, []);
     <main className="min-h-screen">
       {/* Hero */}
       <section className="py-12 md:py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
@@ -193,7 +215,7 @@ export default function Impact() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Impact Stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {stories.map((story) => (
+            {impactStories.map((story) => (
               <Card key={story.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div>
