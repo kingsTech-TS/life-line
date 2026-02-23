@@ -37,6 +37,8 @@ export default function AdminProjects() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  const [editingItem, setEditingItem] = useState<any | null>(null);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -65,6 +67,21 @@ export default function AdminProjects() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  const handleEdit = (project: any) => {
+    setEditingItem(project);
+    setFormData({
+      title: project.title,
+      description: project.description,
+      goalAmount: project.goalAmount,
+      currentAmount: project.currentAmount,
+      country: project.country,
+      image: project.image,
+      impact: project.impact,
+      status: project.status,
+    });
+    setIsDialogOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
@@ -120,15 +137,26 @@ export default function AdminProjects() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/admin/projects", {
-        method: "POST",
+      const url = "/api/admin/projects";
+      const method = editingItem ? "PUT" : "POST";
+      const body = editingItem
+        ? { ...formData, _id: editingItem._id }
+        : formData;
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
-        toast.success("Project created successfully!");
+        toast.success(
+          editingItem
+            ? "Project updated successfully!"
+            : "Project created successfully!",
+        );
         setIsDialogOpen(false);
+        setEditingItem(null);
         fetchProjects();
         setFormData({
           title: "",
@@ -141,7 +169,9 @@ export default function AdminProjects() {
           status: "active",
         });
       } else {
-        toast.error("Failed to create project");
+        toast.error(
+          editingItem ? "Failed to update project" : "Failed to create project",
+        );
       }
     } catch (error) {
       toast.error("An error occurred");
@@ -313,7 +343,10 @@ export default function AdminProjects() {
                     </td>
                     <td className="py-5 text-right px-6 rounded-r-3xl">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all">
+                        <button
+                          onClick={() => handleEdit(project)}
+                          className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all"
+                        >
                           <Edit size={18} />
                         </button>
                         <button
@@ -340,7 +373,7 @@ export default function AdminProjects() {
               <div className="flex justify-between items-center">
                 <div>
                   <DialogTitle className="text-2xl md:text-3xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">
-                    Launch Project
+                    {editingItem ? "Edit Project" : "Launch Project"}
                   </DialogTitle>
                   <p className="text-foreground/50 mt-2 font-medium text-sm md:text-base">
                     Define a new community initiative to drive change.
@@ -511,8 +544,18 @@ export default function AdminProjects() {
             <div className="p-8 bg-muted/10 border-t border-border flex flex-col md:flex-row gap-4 items-center justify-between">
               <div className="flex items-center gap-4">
                 <p className="text-xs font-bold text-foreground/40 italic">
-                  Initial status will be set to{" "}
-                  <span className="text-green-600 font-black">ACTIVE</span>
+                  {editingItem
+                    ? "Updating project status..."
+                    : "Initial status will be set to "}
+                  <span
+                    className={
+                      editingItem
+                        ? "text-primary font-black uppercase"
+                        : "text-green-600 font-black uppercase"
+                    }
+                  >
+                    {editingItem ? formData.status : "ACTIVE"}
+                  </span>
                 </p>
               </div>
               <div className="flex gap-4 w-full md:w-auto">
@@ -531,8 +574,10 @@ export default function AdminProjects() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 animate-spin" size={20} />
-                      Launching...
+                      {editingItem ? "Updating..." : "Launching..."}
                     </>
+                  ) : editingItem ? (
+                    "Update Project"
                   ) : (
                     "Create Project"
                   )}

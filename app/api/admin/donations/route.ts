@@ -19,3 +19,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    await dbConnect();
+    const body = await req.json();
+    const { _id, ...updateData } = body;
+    const donation = await Donation.findByIdAndUpdate(_id, updateData, { new: true });
+    return NextResponse.json(donation);
+  } catch (error) {
+    console.error('Update donation error:', error);
+    return NextResponse.json({ error: 'Failed to update donation' }, { status: 500 });
+  }
+}

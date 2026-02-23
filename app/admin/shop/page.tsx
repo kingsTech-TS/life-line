@@ -36,6 +36,8 @@ export default function AdminShop() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  const [editingItem, setEditingItem] = useState<any | null>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -62,6 +64,19 @@ export default function AdminShop() {
   useEffect(() => {
     fetchItems();
   }, []);
+
+  const handleEdit = (item: any) => {
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      stock: item.stock,
+      category: item.category,
+      image: item.image,
+    });
+    setIsDialogOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this shop item?")) return;
@@ -115,15 +130,24 @@ export default function AdminShop() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/admin/shop", {
-        method: "POST",
+      const url = "/api/admin/shop";
+      const method = editingItem ? "PUT" : "POST";
+      const body = editingItem
+        ? { ...formData, _id: editingItem._id }
+        : formData;
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
-        toast.success("Product added to shop!");
+        toast.success(
+          editingItem ? "Product updated!" : "Product added to shop!",
+        );
         setIsDialogOpen(false);
+        setEditingItem(null);
         fetchItems();
         setFormData({
           name: "",
@@ -134,7 +158,9 @@ export default function AdminShop() {
           image: "",
         });
       } else {
-        toast.error("Failed to add product");
+        toast.error(
+          editingItem ? "Failed to update product" : "Failed to add product",
+        );
       }
     } catch (error) {
       toast.error("An error occurred");
@@ -282,7 +308,10 @@ export default function AdminShop() {
                     </td>
                     <td className="py-5 text-right px-6 rounded-r-3xl">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all"
+                        >
                           <Edit size={18} />
                         </button>
                         <button
@@ -309,7 +338,7 @@ export default function AdminShop() {
               <div className="flex justify-between items-center">
                 <div>
                   <DialogTitle className="text-2xl md:text-3xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">
-                    Add Product
+                    {editingItem ? "Edit Product" : "Add Product"}
                   </DialogTitle>
                   <p className="text-foreground/50 mt-2 font-medium text-sm md:text-base">
                     List a new item in the charity shop.
@@ -504,8 +533,10 @@ export default function AdminShop() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 animate-spin" size={20} />
-                      Adding...
+                      {editingItem ? "Updating..." : "Adding..."}
                     </>
+                  ) : editingItem ? (
+                    "Update Product"
                   ) : (
                     "List Product"
                   )}

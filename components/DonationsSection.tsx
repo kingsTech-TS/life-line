@@ -59,16 +59,14 @@ export default function DonationsSection() {
   }, []);
 
   return (
-    <section className="relative py-32 bg-muted/20 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
-
-      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="max-w-4xl mx-auto text-center mb-24 space-y-6">
+    <section className="relative py-24 bg-muted/20 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* HEADER */}
+        <div className="max-w-3xl mx-auto text-center mb-20 space-y-6">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-black tracking-tighter leading-none"
+            className="text-4xl md:text-6xl font-black tracking-tight"
           >
             Be Someone’s <span className="text-primary italic">LifeLine.</span>
           </motion.h2>
@@ -76,136 +74,136 @@ export default function DonationsSection() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-xl text-foreground/50 max-w-2xl mx-auto font-medium leading-relaxed"
+            className="text-lg text-muted-foreground"
           >
-            Your support does more than fund a cause—it restores dignity and gives
-            a community the chance to thrive.
+            Your support restores dignity and gives communities a chance to
+            thrive.
           </motion.p>
         </div>
 
-        {/* Loading State */}
+        {/* LOADING */}
         {loading && (
-          <div className="text-center py-24 text-foreground/40 font-bold">
+          <div className="text-center py-20 text-muted-foreground font-semibold">
             Loading causes…
           </div>
         )}
 
-        {/* Scrolling Cards */}
+        {/* CARDS */}
         {!loading && causes.length > 0 && (
-          <div className="relative group">
-            <div className="flex overflow-hidden relative">
-              <motion.div
-                className="flex gap-8 py-4"
-                animate={
-                  reduceMotion ? undefined : { x: ["0%", "-50%"] }
-                }
-                transition={{
-                  repeat: Infinity,
-                  ease: "linear",
-                  duration: 30,
-                }}
+          <div className="flex overflow-x-auto gap-8 pb-6 snap-x snap-mandatory scrollbar-hide">
+            {causes.map((cause, index) => (
+              <div
+                key={`${cause.title}-${index}`}
+                className="relative min-w-[320px] sm:min-w-[380px] h-[520px] rounded-3xl overflow-hidden bg-background shadow-xl snap-center shrink-0 transition-transform duration-300 hover:-translate-y-2"
               >
-                {[...causes, ...causes].map((cause, index) => (
-                  <div
-                    key={`${cause.title}-${index}`}
-                    className="relative min-w-[320px] sm:min-w-[400px] h-[500px] rounded-[2.5rem] overflow-hidden bg-background shadow-2xl transition-all duration-500 hover:-translate-y-4"
-                  >
-                    <div className="absolute inset-0">
-                      <Image
-                        src={cause.image}
-                        alt={cause.title}
-                        fill
-                        className="object-cover transition-transform duration-700 hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                    </div>
+                <Image
+                  src={cause.image}
+                  alt={cause.title}
+                  fill
+                  className="object-cover"
+                />
 
-                    <div className="absolute inset-0 p-8 flex flex-col justify-end text-white space-y-4">
-                      <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest bg-white/10 backdrop-blur-md w-fit px-3 py-1.5 rounded-full">
-                        <Target size={14} />
-                        Target: {cause.amount}
-                      </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                      <h3 className="text-3xl font-black leading-tight">
-                        {cause.title}
-                      </h3>
-
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
-                        <MapPin size={14} />
-                        {cause.country}
-                      </div>
-
-                      <p className="text-white/70 line-clamp-2 text-sm">
-                        {cause.description}
-                      </p>
-
-                      <div className="pt-2 opacity-0 hover:opacity-100 transition-opacity">
-                        <Button
-                          onClick={() => setSelectedCause(cause)}
-                          className="w-full h-14 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black"
-                        >
-                          Support this Cause
-                          <ArrowRight className="ml-2 h-5 w-5" />
-                        </Button>
-                      </div>
-                    </div>
+                <div className="absolute bottom-0 p-6 text-white space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide bg-white/20 px-3 py-1 rounded-full w-fit">
+                    <Target size={14} />
+                    Target: {cause.amount}
                   </div>
-                ))}
-              </motion.div>
-            </div>
+
+                  <h3 className="text-2xl font-black">{cause.title}</h3>
+
+                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                    <MapPin size={14} />
+                    {cause.country}
+                  </div>
+
+                  <p className="text-sm text-white/80 line-clamp-3">
+                    {cause.description}
+                  </p>
+
+                  <Button
+                    onClick={() => setSelectedCause(cause)}
+                    className="w-full h-12 rounded-xl bg-white text-black hover:bg-primary hover:text-white font-bold"
+                  >
+                    Support this Cause
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Dialog */}
+      {/* DIALOG */}
       <AnimatePresence>
         {selectedCause && (
           <Dialog
             open={!!selectedCause}
             onOpenChange={(open) => !open && setSelectedCause(null)}
           >
-            <DialogContent className="max-w-5xl h-[100dvh] md:h-[85vh] p-0 rounded-none md:rounded-[3rem] border-none shadow-2xl">
+            <DialogContent
+              className="
+                w-full
+                max-w-6xl
+                h-[100dvh] md:h-[90vh]
+                p-0
+                rounded-none md:rounded-3xl
+                border-none
+                overflow-hidden
+              "
+            >
               <div className="flex flex-col md:flex-row h-full">
-                <div className="relative w-full md:w-1/2 h-56 md:h-full">
+                {/* IMAGE SIDE */}
+                <div className="relative w-full md:w-1/2 h-64 md:h-full md:sticky md:top-0">
                   <Image
                     src={selectedCause.image}
                     alt={selectedCause.title}
                     fill
                     className="object-cover"
-                    priority
                   />
+
                   <button
                     onClick={() => setSelectedCause(null)}
-                    className="absolute top-4 left-4 p-2 rounded-full bg-black/40 text-white"
+                    className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
 
-                <div className="w-full md:w-1/2 p-8 overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle className="text-3xl font-black">
-                      {selectedCause.title}
-                    </DialogTitle>
-                  </DialogHeader>
+                {/* CONTENT SIDE */}
+                <div className="w-full md:w-1/2 flex flex-col h-full">
+                  <div className="flex-1 overflow-y-auto p-8">
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl font-black">
+                        {selectedCause.title}
+                      </DialogTitle>
+                    </DialogHeader>
 
-                  <p className="mt-4 text-foreground/60">
-                    {selectedCause.description}
-                  </p>
-
-                  <div className="mt-6 p-4 rounded-xl bg-primary/5 flex gap-3">
-                    <ShieldCheck className="text-primary" />
-                    <p className="font-bold italic text-foreground/70">
-                      "{selectedCause.impact}"
+                    <p className="mt-6 text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {selectedCause.description}
                     </p>
+
+                    {selectedCause.impact && (
+                      <div className="mt-8 p-5 rounded-2xl bg-primary/10 flex gap-4">
+                        <ShieldCheck className="text-primary mt-1" />
+                        <p className="font-semibold text-foreground/80">
+                          {selectedCause.impact}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                  <Button className="mt-8 w-full h-14 font-black">
-                    Donate Now
-                  </Button>
+                  {/* STICKY FOOTER */}
+                  <div className="p-6 border-t bg-background">
+                    <Button className="w-full h-14 font-bold text-lg">
+                      Donate Now
+                    </Button>
 
-                  <div className="mt-4 flex justify-center items-center gap-2 text-xs text-foreground/40">
-                    <Users size={12} /> Join 1,200+ lifeliners
+                    <div className="mt-3 flex justify-center items-center gap-2 text-xs text-muted-foreground">
+                      <Users size={12} /> Join 1,200+ lifeliners
+                    </div>
                   </div>
                 </div>
               </div>

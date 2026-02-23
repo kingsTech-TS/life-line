@@ -14,29 +14,18 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const categories = [
-  { name: "All", count: 12 },
-  { name: "Health Tips", count: 4 },
-  { name: "Community Stories", count: 3 },
-  { name: "News & Updates", count: 3 },
-  { name: "Partner Spotlights", count: 2 },
+  "All",
+  "Health Tips",
+  "Community Stories",
+  "News & Updates",
+  "Partner Spotlights",
 ];
-
-const featuredPost = {
-  id: 1,
-  title: "Transforming Healthcare Access in Rural Nigeria: Our 2024 Journey",
-  excerpt:
-    "Discover how LifeLine has expanded healthcare access to over 25 communities this year, bringing essential medical services to those who need it most.",
-  image: "/healthcare-workers-in-nigerian-community.jpg",
-  category: "News & Updates",
-  author: "Dr. Amina Okonkwo",
-  date: "December 5, 2024",
-  readTime: "8 min read",
-};
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -56,6 +45,8 @@ export default function BlogPage() {
         setBlogPosts(mappedPosts);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -70,6 +61,14 @@ export default function BlogPage() {
       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const featuredPost = blogPosts[0];
+  const listedPosts = blogPosts.slice(1);
+
+  // Filter listed posts based on search/category (including featured if it matches)
+  const displayPosts = filteredPosts.filter(
+    (post) => post.id !== featuredPost?.id,
+  );
 
   return (
     <main className="min-h-screen">
@@ -94,59 +93,61 @@ export default function BlogPage() {
       </section>
 
       {/* Featured Post */}
-      <section className="py-12 md:py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href={`/blog/${featuredPost.id}`} className="group block">
-            <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30">
-              <div className="grid md:grid-cols-2 gap-0">
-                <div className="relative h-64 md:h-auto min-h-[300px] overflow-hidden">
-                  <img
-                    src={featuredPost.image || "/placeholder.svg"}
-                    alt={featuredPost.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:bg-gradient-to-r" />
-                  <span className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
-                    Featured
-                  </span>
-                </div>
-                <div className="p-6 md:p-10 flex flex-col justify-center">
-                  <span className="text-secondary font-medium text-sm mb-3">
-                    {featuredPost.category}
-                  </span>
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300 text-balance">
-                    {featuredPost.title}
-                  </h2>
-                  <p className="text-foreground/70 mb-6 text-pretty leading-relaxed">
-                    {featuredPost.excerpt}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-foreground/60 mb-6">
-                    <span className="flex items-center gap-1.5">
-                      <User size={14} />
-                      {featuredPost.author}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Calendar size={14} />
-                      {featuredPost.date}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock size={14} />
-                      {featuredPost.readTime}
+      {!loading && featuredPost && !searchQuery && activeCategory === "All" && (
+        <section className="py-12 md:py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <Link href={`/blog/${featuredPost.id}`} className="group block">
+              <Card className="overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30">
+                <div className="grid md:grid-cols-2 gap-0">
+                  <div className="relative h-64 md:h-auto min-h-[300px] overflow-hidden">
+                    <img
+                      src={featuredPost.image || "/placeholder.svg"}
+                      alt={featuredPost.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:bg-gradient-to-r" />
+                    <span className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
+                      Featured
                     </span>
                   </div>
-                  <span className="inline-flex items-center text-primary font-semibold group-hover:gap-3 gap-2 transition-all duration-300">
-                    Read Full Story{" "}
-                    <ArrowRight
-                      size={18}
-                      className="group-hover:translate-x-1 transition-transform"
-                    />
-                  </span>
+                  <div className="p-6 md:p-10 flex flex-col justify-center">
+                    <span className="text-secondary font-medium text-sm mb-3">
+                      {featuredPost.category}
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300 text-balance">
+                      {featuredPost.title}
+                    </h2>
+                    <p className="text-foreground/70 mb-6 text-pretty leading-relaxed">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-foreground/60 mb-6">
+                      <span className="flex items-center gap-1.5">
+                        <User size={14} />
+                        {featuredPost.author}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Calendar size={14} />
+                        {featuredPost.date}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock size={14} />
+                        {featuredPost.readTime}
+                      </span>
+                    </div>
+                    <span className="inline-flex items-center text-primary font-semibold group-hover:gap-3 gap-2 transition-all duration-300">
+                      Read Full Story{" "}
+                      <ArrowRight
+                        size={18}
+                        className="group-hover:translate-x-1 transition-transform"
+                      />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </Link>
-        </div>
-      </section>
+              </Card>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Search and Filter */}
       <section className="py-8 border-y border-border bg-muted/30">
@@ -171,20 +172,15 @@ export default function BlogPage() {
             <div className="flex flex-wrap gap-2 justify-center">
               {categories.map((category) => (
                 <button
-                  key={category.name}
-                  onClick={() => setActiveCategory(category.name)}
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                    activeCategory === category.name
+                    activeCategory === category
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                       : "bg-background text-foreground/70 hover:bg-muted hover:text-foreground border border-border"
                   }`}
                 >
-                  {category.name}
-                  <span
-                    className={`ml-1.5 ${activeCategory === category.name ? "text-primary-foreground/70" : "text-foreground/40"}`}
-                  >
-                    ({category.count})
-                  </span>
+                  {category}
                 </button>
               ))}
             </div>
@@ -195,9 +191,9 @@ export default function BlogPage() {
       {/* Blog Posts Grid */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {filteredPosts.length > 0 ? (
+          {displayPosts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredPosts.map((post, index) => (
+              {displayPosts.map((post, index) => (
                 <Link
                   key={post.id}
                   href={`/blog/${post.id}`}
@@ -257,7 +253,7 @@ export default function BlogPage() {
           )}
 
           {/* Load More */}
-          {filteredPosts.length > 0 && (
+          {displayPosts.length > 0 && (
             <div className="text-center mt-12">
               <Button
                 variant="outline"

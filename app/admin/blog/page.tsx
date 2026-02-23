@@ -38,6 +38,8 @@ export default function AdminBlog() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  const [editingItem, setEditingItem] = useState<any | null>(null);
+
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -66,6 +68,21 @@ export default function AdminBlog() {
   useEffect(() => {
     fetchBlogs();
   }, []);
+
+  const handleEdit = (blog: any) => {
+    setEditingItem(blog);
+    setFormData({
+      title: blog.title,
+      slug: blog.slug,
+      content: blog.content,
+      excerpt: blog.excerpt,
+      image: blog.image,
+      author: blog.author,
+      category: blog.category,
+      status: blog.status,
+    });
+    setIsDialogOpen(true);
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this blog post?")) return;
@@ -119,15 +136,24 @@ export default function AdminBlog() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/admin/blog", {
-        method: "POST",
+      const url = "/api/admin/blog";
+      const method = editingItem ? "PUT" : "POST";
+      const body = editingItem
+        ? { ...formData, _id: editingItem._id }
+        : formData;
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {
-        toast.success("Blog post created!");
+        toast.success(
+          editingItem ? "Blog post updated!" : "Blog post created!",
+        );
         setIsDialogOpen(false);
+        setEditingItem(null);
         fetchBlogs();
         setFormData({
           title: "",
@@ -140,7 +166,9 @@ export default function AdminBlog() {
           status: "published",
         });
       } else {
-        toast.error("Failed to create blog");
+        toast.error(
+          editingItem ? "Failed to update blog" : "Failed to create blog",
+        );
       }
     } catch (error) {
       toast.error("An error occurred");
@@ -307,7 +335,10 @@ export default function AdminBlog() {
                     </td>
                     <td className="py-5 text-right px-6 rounded-r-3xl">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all">
+                        <button
+                          onClick={() => handleEdit(blog)}
+                          className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all"
+                        >
                           <Edit size={18} />
                         </button>
                         <button
@@ -334,7 +365,7 @@ export default function AdminBlog() {
               <div className="flex justify-between items-center">
                 <div>
                   <DialogTitle className="text-2xl md:text-3xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">
-                    New Blog Post
+                    {editingItem ? "Edit Blog Post" : "New Blog Post"}
                   </DialogTitle>
                   <p className="text-foreground/50 mt-2 font-medium text-sm md:text-base">
                     Capture your community's latest impact stories.
@@ -560,8 +591,10 @@ export default function AdminBlog() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 animate-spin" size={20} />
-                      Posting...
+                      {editingItem ? "Updating..." : "Posting..."}
                     </>
+                  ) : editingItem ? (
+                    "Update Blog Post"
                   ) : (
                     "Create Blog Post"
                   )}
