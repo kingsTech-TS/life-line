@@ -15,6 +15,7 @@ import {
   Bell,
   Search,
   ChevronRight,
+  User,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,7 @@ export default function AdminLayout({
     { href: "/admin/donations", label: "Donations", icon: Heart },
     { href: "/admin/impact", label: "Impact", icon: TrendingUp },
     { href: "/admin/shop", label: "Inventory", icon: ShoppingBag },
+    { href: "/admin/ambassadors", label: "Ambassadors", icon: User },
   ];
 
   const handleLogout = async () => {
