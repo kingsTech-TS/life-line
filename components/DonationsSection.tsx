@@ -140,71 +140,60 @@ export default function DonationsSection() {
       <AnimatePresence>
         {selectedCause && (
           <Dialog
-            open={!!selectedCause}
-            onOpenChange={(open) => !open && setSelectedCause(null)}
+            open={true}
+            onOpenChange={(open) => {
+              if (!open) setSelectedCause(null);
+            }}
           >
-            <DialogContent
-              className="
-                w-full
-                max-w-6xl
-                h-[100dvh] md:h-[90vh]
-                p-0
-                rounded-none md:rounded-3xl
-                border-none
-                overflow-hidden
-              "
-            >
-              <div className="flex flex-col md:flex-row h-full">
-                {/* IMAGE SIDE */}
-                <div className="relative w-full md:w-1/2 h-64 md:h-full md:sticky md:top-0">
+            <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto p-0 rounded-2xl md:rounded-3xl border-none shadow-2xl">
+              <div className="flex flex-col">
+                {/* Image */}
+                <div className="relative w-full h-[220px] sm:h-[280px] md:h-[350px]">
                   <Image
                     src={selectedCause.image}
                     alt={selectedCause.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 800px"
                     className="object-cover"
                   />
-
-                  <button
-                    onClick={() => setSelectedCause(null)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black"
-                  >
-                    <X size={18} />
-                  </button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 </div>
 
-                {/* CONTENT SIDE */}
-                <div className="w-full md:w-1/2 flex flex-col h-full">
-                  <div className="flex-1 overflow-y-auto p-8">
-                    <DialogHeader>
-                      <DialogTitle className="text-3xl font-black">
-                        {selectedCause.title}
-                      </DialogTitle>
-                    </DialogHeader>
+                {/* Content */}
+                <div className="p-6 md:p-8 space-y-4">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl md:text-3xl font-bold">
+                      {selectedCause.title}
+                    </DialogTitle>
+                  </DialogHeader>
 
-                    <p className="mt-6 text-muted-foreground leading-relaxed whitespace-pre-line">
-                      {selectedCause.description}
+                  <p className="text-muted-foreground">
+                    {selectedCause.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-primary font-semibold">
+                    <Target size={16} />
+                    {selectedCause.amount} ({selectedCause.country})
+                  </div>
+
+                  {selectedCause.impact && (
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {selectedCause.impact}
                     </p>
+                  )}
 
-                    {selectedCause.impact && (
-                      <div className="mt-8 p-5 rounded-2xl bg-primary/10 flex gap-4">
-                        <ShieldCheck className="text-primary mt-1" />
-                        <p className="font-semibold text-foreground/80">
-                          {selectedCause.impact}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* STICKY FOOTER */}
-                  <div className="p-6 border-t bg-background">
-                    <Button className="w-full h-14 font-bold text-lg">
-                      Donate Now
-                    </Button>
-
-                    <div className="mt-3 flex justify-center items-center gap-2 text-xs text-muted-foreground">
-                      <Users size={12} /> Join 1,200+ lifeliners
-                    </div>
-                  </div>
+                  <Button
+                    size="lg"
+                    className="w-full bg-primary hover:bg-primary/90 text-white mt-4"
+                    onClick={() => {
+                      alert(
+                        `Thank you for supporting ${selectedCause.title}! ❤️`,
+                      );
+                      setSelectedCause(null);
+                    }}
+                  >
+                    Donate Now
+                  </Button>
                 </div>
               </div>
             </DialogContent>

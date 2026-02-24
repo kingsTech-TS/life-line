@@ -12,26 +12,26 @@ const metrics = [
   { label: "Countries reached", value: "3" },
 ];
 
-const regionData = [
-  {
-    region: "North West Nigeria",
-    people: "1,450",
-    projects: "2",
-    image: "placeholder.svg",
-  },
-  {
-    region: "South East Nigeria",
-    people: "1,200",
-    projects: "3",
-    image: "placeholder.svg",
-  },
-  {
-    region: "Rural Communities (Multiple States)",
-    people: "2,200",
-    projects: "2",
-    image: "placeholder.svg",
-  },
-];
+// const regionData = [
+//   {
+//     region: "North West Nigeria",
+//     people: "1,450",
+//     projects: "2",
+//     image: "placeholder.svg",
+//   },
+//   {
+//     region: "South East Nigeria",
+//     people: "1,200",
+//     projects: "3",
+//     image: "placeholder.svg",
+//   },
+//   {
+//     region: "Rural Communities (Multiple States)",
+//     people: "2,200",
+//     projects: "2",
+//     image: "placeholder.svg",
+//   },
+// ];
 
 export default function ReportsClient() {
   const [reports, setReports] = useState<any[]>([]);
@@ -92,7 +92,7 @@ export default function ReportsClient() {
           ))}
         </div>
 
-        {/* Regional Snapshot */}
+        {/* Regional Snapshot
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-foreground mb-8">
             Regional Snapshot
@@ -129,7 +129,7 @@ export default function ReportsClient() {
               </motion.div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* In-Field Stories */}
         <div className="mb-16">

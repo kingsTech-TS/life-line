@@ -121,54 +121,85 @@ export default function DonationsPage() {
         {/* Dialog for Selected Cause */}
         <Dialog
           open={!!selectedCause}
-          onOpenChange={() => setSelectedCause(null)}
+          onOpenChange={(open) => {
+            if (!open) setSelectedCause(null);
+          }}
         >
-          <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl border-none">
+          <DialogContent
+            className="
+      max-w-3xl w-[95vw]
+      max-h-[90vh]
+      overflow-y-auto
+      p-0
+      rounded-2xl md:rounded-3xl
+      border-none
+      shadow-2xl
+    "
+          >
             {selectedCause && (
-              <>
-                <div className="relative w-full h-[300px] md:h-[400px]">
+              <div className="flex flex-col">
+                {/* Image Section */}
+                <div className="relative w-full h-[220px] sm:h-[280px] md:h-[350px]">
                   <Image
-                    src={selectedCause.image || "placeholder.svg"}
+                    src={selectedCause.image || "/placeholder.svg"}
                     alt={selectedCause.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 800px"
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 </div>
 
+                {/* Content Section */}
                 <div className="p-6 md:p-8">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold mb-2">
+                    <DialogTitle className="text-2xl md:text-3xl font-bold mb-2">
                       {selectedCause.title}
                     </DialogTitle>
-                    <DialogDescription className="text-foreground/80 text-base mb-4">
+
+                    <DialogDescription className="text-muted-foreground text-base mb-4">
                       {selectedCause.description}
                     </DialogDescription>
                   </DialogHeader>
 
-                  <div className="text-primary font-bold text-lg mb-2">
+                  {/* Goal */}
+                  <div className="text-primary font-semibold text-lg mb-2">
                     Goal: ₦{selectedCause.goalAmount?.toLocaleString()} (
                     {selectedCause.country})
                   </div>
-                  <p className="text-sm text-foreground/70 mb-8">
-                    {selectedCause.impact}
-                  </p>
 
-                  <DialogFooter>
+                  {/* Impact */}
+                  {selectedCause.impact && (
+                    <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+                      {selectedCause.impact}
+                    </p>
+                  )}
+
+                  {/* Donate Button */}
+                  <DialogFooter className="mt-4">
                     <Button
                       size="lg"
-                      className="bg-primary text-white hover:bg-primary/90 w-full rounded-xl font-bold h-12 shadow-lg shadow-primary/20"
-                      onClick={() =>
+                      className="
+                bg-primary text-white
+                hover:bg-primary/90
+                w-full
+                rounded-xl
+                font-semibold
+                h-12
+                shadow-lg shadow-primary/20
+              "
+                      onClick={() => {
                         alert(
                           `Thank you for donating to ${selectedCause.title}! ❤️`,
-                        )
-                      }
+                        );
+                        setSelectedCause(null);
+                      }}
                     >
                       Donate Now
                     </Button>
                   </DialogFooter>
                 </div>
-              </>
+              </div>
             )}
           </DialogContent>
         </Dialog>
