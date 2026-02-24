@@ -42,7 +42,6 @@ export default function AdminBlog() {
 
   const [formData, setFormData] = useState({
     title: "",
-    slug: "",
     content: "",
     excerpt: "",
     image: "",
@@ -73,7 +72,6 @@ export default function AdminBlog() {
     setEditingItem(blog);
     setFormData({
       title: blog.title,
-      slug: blog.slug,
       content: blog.content,
       excerpt: blog.excerpt,
       image: blog.image,
@@ -157,7 +155,6 @@ export default function AdminBlog() {
         fetchBlogs();
         setFormData({
           title: "",
-          slug: "",
           content: "",
           excerpt: "",
           image: "",
@@ -403,35 +400,19 @@ export default function AdminBlog() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
-                        Slug
-                      </label>
-                      <Input
-                        required
-                        className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-mono text-sm"
-                        placeholder="impact-story-2025"
-                        value={formData.slug}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFormData({ ...formData, slug: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
-                        Category
-                      </label>
-                      <Input
-                        required
-                        className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold"
-                        placeholder="Health, Education..."
-                        value={formData.category}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setFormData({ ...formData, category: e.target.value })
-                        }
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
+                      Category
+                    </label>
+                    <Input
+                      required
+                      className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold"
+                      placeholder="Health, Education..."
+                      value={formData.category}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFormData({ ...formData, category: e.target.value })
+                      }
+                    />
                   </div>
 
                   <div className="space-y-2">
