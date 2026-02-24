@@ -38,14 +38,47 @@ const teamMembers = [
     image: "/placeholder.svg",
   },
   {
-    name: "David Okonkwo",
-    role: "Operations Manager",
-    image: "placeholder.svg",
-  },
-  {
     name: "Grace Okafor",
     role: "Communications Officer",
     image: "placeholder.svg",
+  },
+];
+
+const stateAmbassadors = [
+  {
+    state: "KWARA STATE",
+    ambassadors: [
+      { name: "Salisu Rahmat", image: "placeholder.svg" },
+      { name: "Abdulwaheed Fatimah", image: "placeholder.svg" },
+    ],
+  },
+  {
+    state: "ONDO STATE",
+    ambassadors: [
+      { name: "Onibudo Faith", image: "placeholder.svg" },
+      { name: "Adamolekun Emmanuel", image: "placeholder.svg" },
+    ],
+  },
+  {
+    state: "OYO STATE",
+    ambassadors: [
+      { name: "Olorunfemi Moyinoluwa", image: "placeholder.svg" },
+      { name: "Warith Ademola", image: "placeholder.svg" },
+    ],
+  },
+  {
+    state: "RIVERS STATE",
+    ambassadors: [
+      { name: "Maxwell PraiseGod", image: "placeholder.svg" },
+      { name: "Amaefule Ugochukwu", image: "placeholder.svg" },
+    ],
+  },
+  {
+    state: "YOBE STATE",
+    ambassadors: [
+      { name: "Abubakar Ibrahim", image: "placeholder.svg" },
+      { name: "Abubakar Adamu", image: "placeholder.svg" },
+    ],
   },
 ];
 
@@ -67,7 +100,7 @@ export default function MeetTeamClient() {
           </div>
 
           {/* Team Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-24">
             {teamMembers.map((member, index) => (
               <motion.div
                 key={index}
@@ -99,6 +132,67 @@ export default function MeetTeamClient() {
                 </Card>
               </motion.div>
             ))}
+          </div>
+
+          {/* Ambassadors Section */}
+          <div className="mt-20">
+            <div className="max-w-3xl mx-auto text-center mb-16">
+              <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-bold rounded-full mb-4 tracking-widest uppercase">
+                Global Network
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4 tracking-tight">
+                LIFELINE STATE <span className="text-primary">AMBASSADORS</span>
+              </h2>
+              <div className="h-1.5 w-24 bg-primary mx-auto rounded-full" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {stateAmbassadors.map((group, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="p-8 rounded-[2rem] border-none bg-gradient-to-br from-background to-muted/50 shadow-xl shadow-foreground/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <Image
+                        src="/placeholder.svg"
+                        alt="State Icon"
+                        width={100}
+                        height={100}
+                      />
+                    </div>
+                    <h3 className="text-xl font-black text-primary mb-6 flex items-center gap-3">
+                      <span className="h-2 w-2 rounded-full bg-primary" />
+                      {group.state}
+                    </h3>
+                    <ul className="space-y-4">
+                      {group.ambassadors.map((person, i) => (
+                        <li
+                          key={i}
+                          className="flex items-center gap-4 group/item"
+                        >
+                          <div className="h-20 w-20 rounded-2xl border-2 border-primary/20 p-1 overflow-hidden transition-all group-hover/item:border-primary shadow-lg shadow-primary/5">
+                            <Image
+                              src={person.image || "/placeholder.svg"}
+                              alt={person.name}
+                              width={80}
+                              height={80}
+                              className="w-full h-full object-cover rounded-[0.75rem]"
+                            />
+                          </div>
+                          <span className="font-bold text-foreground/80 tracking-tight group-hover/item:text-primary transition-colors">
+                            {person.name}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </main>
