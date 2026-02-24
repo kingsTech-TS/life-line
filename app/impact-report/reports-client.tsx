@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/dialog";
 
 const metrics = [
   { label: "Amount deployed this quarter", value: "₦15,200,000" },
@@ -36,6 +42,7 @@ const metrics = [
 export default function ReportsClient() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -165,7 +172,7 @@ export default function ReportsClient() {
                       <h3 className="text-xl font-semibold mb-2">
                         {report.title}
                       </h3>
-                      <p className="text-sm text-foreground/70 mb-4 flex-1">
+                      <p className="text-sm text-foreground/70 mb-4 flex-1 line-clamp-3">
                         {report.description}
                       </p>
                       <div className="flex gap-2 flex-wrap mb-4">
@@ -178,7 +185,11 @@ export default function ReportsClient() {
                           </span>
                         ))}
                       </div>
-                      <Button variant="secondary" className="w-full">
+                      <Button
+                        variant="secondary"
+                        className="w-full"
+                        onClick={() => setSelectedReport(report)}
+                      >
                         Read full story
                       </Button>
                     </div>
@@ -207,6 +218,62 @@ export default function ReportsClient() {
           </Button>
         </motion.div>
       </div>
+
+      {selectedReport && (
+        <Dialog
+          open={!!selectedReport}
+          onOpenChange={(open) => {
+            if (!open) setSelectedReport(null);
+          }}
+        >
+          <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-none shadow-2xl">
+            <div className="flex flex-col">
+              {/* Image */}
+              <div className="relative w-full h-[250px] md:h-[400px]">
+                <img
+                  src={selectedReport.imageUrl || "placeholder.svg"}
+                  alt={selectedReport.title}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="p-6 md:p-8 space-y-6">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl md:text-3xl font-bold">
+                    {selectedReport.title}
+                  </DialogTitle>
+                </DialogHeader>
+
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {selectedReport.description}
+                </p>
+
+                {/* Tags */}
+                {selectedReport.tags?.length > 0 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {selectedReport.tags.map((tag: string, i: number) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <Button
+                  className="w-full mt-4"
+                  onClick={() => setSelectedReport(null)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </main>
   );
 }
