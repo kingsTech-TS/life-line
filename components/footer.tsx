@@ -127,7 +127,7 @@ export default function Footer() {
             </h3>
             <div className="space-y-4">
               <a
-                href="mailto:hello@lifeline.ng"
+                href="mailto:lifelinebynphn@gmail.com"
                 className="flex items-center gap-4 group p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-primary/20 transition-all"
               >
                 <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
@@ -138,7 +138,7 @@ export default function Footer() {
                     Email Address
                   </p>
                   <p className="text-sm text-zinc-300 group-hover:text-white transition-colors">
-                    hello@lifeline.ng
+                    lifelinebynphn@gmail.com
                   </p>
                 </div>
               </a>
