@@ -12,22 +12,32 @@ import {
 import { Card } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 
+import dbConnect from "@/lib/mongodb";
+import Blog from "@/models/Blog";
+
 async function getPost(id: string) {
-  // Use absolute URL for server-side fetching in Next.js if needed,
-  // but usually a relative URL works if the API is in the same app.
-  // However, for server components, it's better to call the logic directly or use a full URL.
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/posts/${id}`, { cache: "no-store" });
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    await dbConnect();
+    const post = await Blog.findById(id).lean();
+    return post ? JSON.parse(JSON.stringify(post)) : null;
+  } catch (error) {
+    console.error("Error fetching post directly:", error);
+    return null;
+  }
 }
 
 async function getRelatedPosts() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/posts`, { cache: "no-store" });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.slice(0, 3);
+  try {
+    await dbConnect();
+    const posts = await Blog.find({ status: "published" })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .lean();
+    return JSON.parse(JSON.stringify(posts));
+  } catch (error) {
+    console.error("Error fetching related posts directly:", error);
+    return [];
+  }
 }
 
 export default async function BlogPostPage({
