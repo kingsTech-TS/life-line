@@ -125,7 +125,7 @@ export default function MeetTeamClient() {
                 Global Network
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4 tracking-tight">
-                LIFELINE STATE <span className="text-primary">AMBASSADORS</span>
+                STATE <span className="text-primary">AMBASSADORS</span>
               </h2>
               <div className="h-1.5 w-24 bg-primary mx-auto rounded-full" />
             </div>
@@ -195,7 +195,7 @@ export default function MeetTeamClient() {
       </main>
 
       {/* ✅ CTA Section — placed above the footer */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
+      {/* <section className="py-16 md:py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Join Our Mission
@@ -208,7 +208,7 @@ export default function MeetTeamClient() {
             <Link href="/donate">Get Involved</Link>
           </Button>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

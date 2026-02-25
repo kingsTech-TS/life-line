@@ -12,10 +12,10 @@ import {
 } from "../../components/ui/dialog";
 
 const metrics = [
-  { label: "Amount deployed this quarter", value: "₦15,200,000" },
-  { label: "People supported", value: "4,850" },
-  { label: "Active initiatives", value: "7" },
-  { label: "Countries reached", value: "3" },
+  { label: "Amount deployed this quarter", value: "₦0" },
+  { label: "People supported", value: "0" },
+  { label: "Active initiatives", value: "0" },
+  { label: "Countries reached", value: "1" },
 ];
 
 // const regionData = [
@@ -210,8 +210,8 @@ export default function ReportsClient() {
             Want a deeper dive?
           </h2>
           <p className="text-lg text-foreground/70 mb-8">
-            Download our full Q3 2025 Report (PDF) including financials, audits
-            and full project data.
+            Quarterly reports will be available for download here, including
+            financials, audits, and full project data.
           </p>
           <Button size="lg" className="bg-primary text-white rounded-xl px-10">
             Download the report

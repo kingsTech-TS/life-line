@@ -44,7 +44,8 @@ export default function AdminShop() {
     price: 0,
     stock: 0,
     category: "",
-    image: "",
+    images: [] as string[],
+    variants: [] as { type: string; options: string[] }[],
   });
 
   const fetchItems = async () => {
@@ -73,7 +74,8 @@ export default function AdminShop() {
       price: item.price,
       stock: item.stock,
       category: item.category,
-      image: item.image,
+      images: item.images || (item.image ? [item.image] : []),
+      variants: item.variants || [],
     });
     setIsDialogOpen(true);
   };
@@ -95,36 +97,84 @@ export default function AdminShop() {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    const uploadData = new FormData();
-    uploadData.append("file", file);
+    const newImages: string[] = [...formData.images];
 
     try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: uploadData,
-      });
-      const data = await res.json();
-      if (data.url) {
-        setFormData((prev) => ({ ...prev, image: data.url }));
-        toast.success("Image uploaded successfully");
-      } else {
-        toast.error("Upload failed");
+      for (let i = 0; i < files.length; i++) {
+        const uploadData = new FormData();
+        uploadData.append("file", files[i]);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: uploadData,
+        });
+        const data = await res.json();
+        if (data.url) {
+          newImages.push(data.url);
+        } else {
+          toast.error(`Upload failed for ${files[i].name}`);
+        }
       }
+      setFormData((prev) => ({ ...prev, images: newImages }));
+      toast.success("Images uploaded successfully");
     } catch (error) {
-      toast.error("Error uploading image");
+      toast.error("Error uploading images");
     } finally {
       setIsUploading(false);
     }
   };
 
+  const removeImage = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addVariant = () => {
+    setFormData((prev) => ({
+      ...prev,
+      variants: [...prev.variants, { type: "", options: [""] }],
+    }));
+  };
+
+  const updateVariantType = (index: number, type: string) => {
+    const newVariants = [...formData.variants];
+    newVariants[index].type = type;
+    setFormData((prev) => ({ ...prev, variants: newVariants }));
+  };
+
+  const addOption = (variantIndex: number) => {
+    const newVariants = [...formData.variants];
+    newVariants[variantIndex].options.push("");
+    setFormData((prev) => ({ ...prev, variants: newVariants }));
+  };
+
+  const updateOption = (
+    variantIndex: number,
+    optionIndex: number,
+    value: string,
+  ) => {
+    const newVariants = [...formData.variants];
+    newVariants[variantIndex].options[optionIndex] = value;
+    setFormData((prev) => ({ ...prev, variants: newVariants }));
+  };
+
+  const removeVariant = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      variants: prev.variants.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.image) {
-      toast.error("Please upload an image first");
+    if (formData.images.length === 0) {
+      toast.error("Please upload at least one image");
       return;
     }
 
@@ -132,9 +182,13 @@ export default function AdminShop() {
     try {
       const url = "/api/admin/shop";
       const method = editingItem ? "PUT" : "POST";
-      const body = editingItem
-        ? { ...formData, _id: editingItem._id }
-        : formData;
+
+      // For backward compatibility on the backend, we still send 'image' as the first image
+      const body = {
+        ...formData,
+        image: formData.images[0],
+        _id: editingItem?._id,
+      };
 
       const res = await fetch(url, {
         method,
@@ -155,7 +209,8 @@ export default function AdminShop() {
           price: 0,
           stock: 0,
           category: "",
-          image: "",
+          images: [],
+          variants: [],
         });
       } else {
         toast.error(
@@ -187,7 +242,19 @@ export default function AdminShop() {
           </p>
         </div>
         <Button
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setEditingItem(null);
+            setFormData({
+              name: "",
+              description: "",
+              price: 0,
+              stock: 0,
+              category: "",
+              images: [],
+              variants: [],
+            });
+            setIsDialogOpen(true);
+          }}
           className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
         >
           <Plus size={20} /> <span className="font-bold">New Product</span>
@@ -268,9 +335,9 @@ export default function AdminShop() {
                     <td className="py-5 px-4 rounded-l-3xl">
                       <div className="flex items-center gap-4">
                         <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-md bg-muted flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                          {item.image ? (
+                          {item.images?.length > 0 || item.image ? (
                             <Image
-                              src={item.image}
+                              src={item.images?.[0] || item.image}
                               alt={item.name}
                               fill
                               className="object-cover"
@@ -357,9 +424,9 @@ export default function AdminShop() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex-1 overflow-y-auto p-6 md:p-8 pt-4 space-y-6"
+              className="flex-1 overflow-y-auto p-6 md:p-8 pt-4 space-y-8"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
@@ -429,74 +496,15 @@ export default function AdminShop() {
                       }
                     />
                   </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
-                      Product Image
-                    </label>
-                    <div className="relative group">
-                      <div className="relative aspect-square rounded-[1.5rem] bg-muted/50 border-2 border-dashed border-foreground/10 group-hover:border-primary/40 transition-all overflow-hidden flex flex-col items-center justify-center gap-2 text-center p-4">
-                        {formData.image ? (
-                          <>
-                            <Image
-                              src={formData.image}
-                              alt="Product preview"
-                              fill
-                              className="object-contain p-4"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <label className="cursor-pointer bg-white text-black px-4 py-2 rounded-xl font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2">
-                                <Upload size={16} /> Change Image
-                                <input
-                                  type="file"
-                                  className="hidden"
-                                  accept="image/*"
-                                  onChange={handleImageUpload}
-                                />
-                              </label>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {isUploading ? (
-                              <Loader2
-                                className="animate-spin text-primary"
-                                size={32}
-                              />
-                            ) : (
-                              <ShoppingBag
-                                className="text-foreground/20 group-hover:text-primary/50 transition-colors"
-                                size={40}
-                              />
-                            )}
-                            <label className="mt-2 cursor-pointer bg-primary/10 text-primary hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all scale-100 active:scale-95">
-                              {isUploading
-                                ? "Uploading..."
-                                : "Select Product Image"}
-                              <input
-                                type="file"
-                                className="hidden"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                disabled={isUploading}
-                              />
-                            </label>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
-                      Short Description
+                      Product Description
                     </label>
                     <textarea
                       required
-                      className="w-full p-4 min-h-[100px] rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-medium resize-none outline-none transition-all"
-                      placeholder="Briefly describe the product and its impact..."
+                      className="w-full p-4 min-h-[140px] rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-medium resize-none outline-none transition-all"
+                      placeholder="Explain the mission and scope of this product..."
                       value={formData.description}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setFormData({
@@ -505,6 +513,131 @@ export default function AdminShop() {
                         })
                       }
                     />
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  <div className="space-y-3">
+                    <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
+                      Product Gallery
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      {formData.images.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="relative aspect-square rounded-2xl overflow-hidden group border border-border"
+                        >
+                          <Image
+                            src={img}
+                            alt="Gallery"
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(idx)}
+                            className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                      <label className="aspect-square rounded-2xl border-2 border-dashed border-foreground/10 hover:border-primary/40 transition-all flex flex-col items-center justify-center cursor-pointer bg-muted/20">
+                        {isUploading ? (
+                          <Loader2
+                            className="animate-spin text-primary"
+                            size={24}
+                          />
+                        ) : (
+                          <>
+                            <Plus className="text-foreground/20" size={32} />
+                            <span className="text-[10px] font-black uppercase tracking-widest mt-2">
+                              Add Image
+                            </span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          multiple
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={isUploading}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
+                        Variants (Size, Color, etc.)
+                      </label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={addVariant}
+                        className="text-xs font-bold text-primary hover:text-primary hover:bg-primary/5 px-2 h-7"
+                      >
+                        <Plus size={14} className="mr-1" /> Add Group
+                      </Button>
+                    </div>
+
+                    <div className="space-y-6">
+                      {formData.variants.map((v, vIdx) => (
+                        <div
+                          key={vIdx}
+                          className="p-5 rounded-[1.5rem] bg-muted/30 border border-border/50 relative group/variant"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => removeVariant(vIdx)}
+                            className="absolute -top-2 -right-2 p-1.5 bg-background border border-border text-foreground/40 hover:text-red-500 rounded-full shadow-sm transition-colors"
+                          >
+                            <X size={14} />
+                          </button>
+
+                          <div className="space-y-4">
+                            <Input
+                              placeholder="e.g. Size"
+                              className="h-10 rounded-xl bg-background border-none focus-visible:ring-1 focus-visible:ring-primary font-bold text-sm"
+                              value={v.type}
+                              onChange={(e) =>
+                                updateVariantType(vIdx, e.target.value)
+                              }
+                            />
+
+                            <div className="flex flex-wrap gap-2">
+                              {v.options.map((opt, oIdx) => (
+                                <div
+                                  key={oIdx}
+                                  className="flex items-center gap-1"
+                                >
+                                  <Input
+                                    placeholder="Value"
+                                    className="h-9 w-20 rounded-lg bg-background border-none focus-visible:ring-1 focus-visible:ring-primary text-xs font-medium"
+                                    value={opt}
+                                    onChange={(e) =>
+                                      updateOption(vIdx, oIdx, e.target.value)
+                                    }
+                                  />
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => addOption(vIdx)}
+                                className="h-9 w-9 p-0 rounded-lg border-dashed"
+                              >
+                                <Plus size={14} />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

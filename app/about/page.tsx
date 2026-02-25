@@ -116,7 +116,12 @@ export default function About() {
             Whether through donations, volunteering, or partnerships, there are
             many ways to support our work.
           </p>
-          <Button asChild size="lg" variant="secondary">
+          <Button
+            asChild
+            size="lg"
+            variant="secondary"
+            className="bg-black text-white"
+          >
             <Link href="/donate">Get Involved</Link>
           </Button>
         </div>
