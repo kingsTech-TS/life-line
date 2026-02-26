@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IShopItem extends Document {
   name: string;
+  slug: string;
   description: string;
   price: number;
   image: string; // Maintain for backward compatibility if needed, but we'll prefer images array
@@ -20,6 +21,7 @@ export interface IShopItem extends Document {
 const ShopItemSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     image: { type: String }, // Legacy field

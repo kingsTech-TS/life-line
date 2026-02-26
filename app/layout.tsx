@@ -1,33 +1,39 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import Script from "next/script"
-import "./globals.css"
-import Header from "../components/header"
-import Footer from "../components/footer"
+import type React from "react";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
+import "./globals.css";
+import Header from "../components/header";
+import Footer from "../components/footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "LifeLine - Health & Wellness for Underserved Communities",
-  description: "Bringing quality healthcare and wellness solutions to underserved communities across Nigeria.",
+  description:
+    "Bringing quality healthcare and wellness solutions to underserved communities across Nigeria.",
   generator: "v0.app",
   keywords: "healthcare, wellness, Nigeria, community health, donations",
   authors: [{ name: "LifeLine" }],
   openGraph: {
     title: "LifeLine - Health & Wellness for Underserved Communities",
-    description: "Bringing quality healthcare and wellness solutions to underserved communities across Nigeria.",
+    description:
+      "Bringing quality healthcare and wellness solutions to underserved communities across Nigeria.",
     type: "website",
   },
-}
+};
+
+import { CartProvider } from "@/context/CartContext";
+import GlobalCartWrapper from "@/components/GlobalCartWrapper";
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -53,7 +59,6 @@ export default function RootLayout({
 
         <script src="https://js.paystack.co/v1/inline.js"></script>
 
-
         <Script
           id="meta-pixel"
           strategy="afterInteractive"
@@ -74,11 +79,15 @@ export default function RootLayout({
         />
       </head>
       <body className={`font-sans antialiased`}>
-        <Header />
-        {children}
-        <Footer />
-        <Analytics />
+        <CartProvider>
+          <Header />
+          {children}
+          <Footer />
+          <GlobalCartWrapper />
+          <Analytics />
+          <ToastContainer position="bottom-right" theme="dark" />
+        </CartProvider>
       </body>
     </html>
-  )
+  );
 }

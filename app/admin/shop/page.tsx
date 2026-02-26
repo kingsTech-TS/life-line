@@ -40,6 +40,7 @@ export default function AdminShop() {
 
   const [formData, setFormData] = useState({
     name: "",
+    slug: "",
     description: "",
     price: 0,
     stock: 0,
@@ -47,6 +48,13 @@ export default function AdminShop() {
     images: [] as string[],
     variants: [] as { type: string; options: string[] }[],
   });
+
+  const slugify = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^\w ]+/g, "")
+      .replace(/ +/g, "-");
+  };
 
   const fetchItems = async () => {
     try {
@@ -70,6 +78,7 @@ export default function AdminShop() {
     setEditingItem(item);
     setFormData({
       name: item.name,
+      slug: item.slug || slugify(item.name),
       description: item.description,
       price: item.price,
       stock: item.stock,
@@ -205,6 +214,7 @@ export default function AdminShop() {
         fetchItems();
         setFormData({
           name: "",
+          slug: "",
           description: "",
           price: 0,
           stock: 0,
@@ -246,6 +256,7 @@ export default function AdminShop() {
             setEditingItem(null);
             setFormData({
               name: "",
+              slug: "",
               description: "",
               price: 0,
               stock: 0,
@@ -437,8 +448,35 @@ export default function AdminShop() {
                       className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold text-lg"
                       placeholder="e.g. LifeLine Charity Branded T-Shirt"
                       value={formData.name}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const newName = e.target.value;
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: newName,
+                          // Auto-generate slug if it's empty or matches the old name's slug
+                          slug:
+                            !prev.slug || prev.slug === slugify(prev.name)
+                              ? slugify(newName)
+                              : prev.slug,
+                        }));
+                      }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
+                      URL Slug
+                    </label>
+                    <Input
+                      required
+                      className="h-10 rounded-xl bg-muted/20 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold text-xs"
+                      placeholder="lifeline-t-shirt"
+                      value={formData.slug}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFormData({ ...formData, name: e.target.value })
+                        setFormData({
+                          ...formData,
+                          slug: slugify(e.target.value),
+                        })
                       }
                     />
                   </div>

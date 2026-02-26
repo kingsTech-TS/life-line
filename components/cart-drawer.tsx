@@ -5,15 +5,13 @@ import { X } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
 
-export default function CartDrawer({
-  open,
-  onClose,
-  items,
-  products,
-  onRemove,
-}: any) {
-  const total = items.reduce((sum: number, item: any) => {
-    return sum + (item.price || 0);
+export default function CartDrawer({ open, onClose, items, onRemove }: any) {
+  const totalPrice = items.reduce((sum: number, item: any) => {
+    return sum + (item.price * (item.quantity || 1) || 0);
+  }, 0);
+
+  const totalQuantity = items.reduce((sum: number, item: any) => {
+    return sum + (item.quantity || 1);
   }, 0);
 
   return (
@@ -35,7 +33,7 @@ export default function CartDrawer({
           <div>
             <h2 className="text-2xl font-black tracking-tight">Your Cart</h2>
             <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest mt-1">
-              {items.length} {items.length === 1 ? "Item" : "Items"} selected
+              {totalQuantity} {totalQuantity === 1 ? "Item" : "Items"} selected
             </p>
           </div>
           <button
@@ -56,10 +54,10 @@ export default function CartDrawer({
             items.map((item: any, index: number) => {
               return (
                 <div
-                  key={index}
+                  key={`${item.id}-${index}`}
                   className="group relative bg-muted/30 rounded-3xl p-4 flex gap-4 border border-transparent hover:border-primary/20 transition-all"
                 >
-                  <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-background shadow-sm">
+                  <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-background shadow-sm flex-shrink-0">
                     <Image
                       src={item.image || "/placeholder.svg"}
                       alt={item.name}
@@ -69,9 +67,15 @@ export default function CartDrawer({
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground text-sm line-clamp-1 mb-1">
-                      {item.name}
-                    </h3>
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="font-bold text-foreground text-sm line-clamp-1">
+                        {item.name}
+                      </h3>
+                      <p className="font-black text-primary text-sm ml-2">
+                        ₦{(item.price * (item.quantity || 1)).toLocaleString()}
+                      </p>
+                    </div>
+
                     <div className="flex flex-wrap gap-2 mb-2">
                       {item.variants &&
                         Object.entries(item.variants).map(
@@ -85,13 +89,14 @@ export default function CartDrawer({
                           ),
                         )}
                     </div>
-                    <p className="font-black text-primary">
-                      ₦{item.price.toLocaleString()}
+
+                    <p className="text-[10px] font-bold text-foreground/40">
+                      Qty: {item.quantity || 1} × ₦{item.price.toLocaleString()}
                     </p>
                   </div>
 
                   <button
-                    onClick={() => onRemove(item.id)}
+                    onClick={() => onRemove(item.id, item.variants)}
                     className="absolute -top-2 -right-2 h-8 w-8 bg-white border border-border shadow-md rounded-full flex items-center justify-center text-foreground/40 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                   >
                     <X size={16} />
@@ -108,7 +113,7 @@ export default function CartDrawer({
               Subtotal
             </span>
             <span className="text-3xl font-black text-foreground">
-              ₦{total.toLocaleString()}
+              ₦{totalPrice.toLocaleString()}
             </span>
           </div>
 

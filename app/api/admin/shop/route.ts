@@ -12,14 +12,27 @@ export async function GET(req: NextRequest) {
   }
 }
 
+const slugify = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^\w ]+/g, '')
+    .replace(/ +/g, '-');
+};
+
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
     const body = await req.json();
+    if (!body.slug && body.name) {
+      body.slug = slugify(body.name);
+    } else if (body.slug) {
+      body.slug = slugify(body.slug);
+    }
     const item = new ShopItem(body);
     await item.save();
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
+    console.error('Failed to create shop item:', error);
     return NextResponse.json({ error: 'Failed to create shop item' }, { status: 500 });
   }
 }
@@ -29,9 +42,15 @@ export async function PUT(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
     const { _id, ...updateData } = body;
+    if (updateData.slug) {
+      updateData.slug = slugify(updateData.slug);
+    } else if (updateData.name) {
+      updateData.slug = slugify(updateData.name);
+    }
     const item = await ShopItem.findByIdAndUpdate(_id, updateData, { new: true });
     return NextResponse.json(item);
   } catch (error) {
+    console.error('Failed to update shop item:', error);
     return NextResponse.json({ error: 'Failed to update shop item' }, { status: 500 });
   }
 }

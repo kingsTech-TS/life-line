@@ -3,14 +3,16 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+  const { totalItems, setIsCartOpen } = useCart();
   const isAdminPage = pathname?.startsWith("/admin");
 
   if (isAdminPage) return null;
@@ -82,6 +84,17 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative p-2 text-foreground hover:text-primary transition-colors"
+            >
+              <ShoppingCart size={24} />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
+                  {totalItems}
+                </span>
+              )}
+            </button>
             <Button asChild variant="default" size="sm">
               <Link href="/donate">Donate Now</Link>
             </Button>
@@ -146,6 +159,25 @@ export default function Header() {
                 )}
               </div>
             ))}
+            <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-4 pt-4">
+              <button
+                onClick={() => {
+                  setIsCartOpen(true);
+                  setIsOpen(false);
+                }}
+                className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              >
+                <div className="relative">
+                  <ShoppingCart size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
+                      {totalItems}
+                    </span>
+                  )}
+                </div>
+                Cart ({totalItems})
+              </button>
+            </div>
             <Button asChild className="w-full mt-4">
               <Link href="/donate">Donate Now</Link>
             </Button>
