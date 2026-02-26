@@ -37,9 +37,9 @@ export default function Footer() {
               <Image
                 src="/logo/logo.png"
                 alt="LifeLine Logo"
-                width={140}
-                height={48}
-                className="h-10 w-auto invert brightness-200"
+                width={350}
+                height={200}
+                className="h-28 w-auto"
               />
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
@@ -180,7 +180,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6 text-xs font-semibold tracking-wider uppercase">
           <p>
-            © 2025 Lifeline Foundation. Built with{" "}
+            © 2025 Lifeline by NPHN. Built with{" "}
             <Heart
               size={12}
               className="inline-block text-red-500 mx-1 animate-pulse"

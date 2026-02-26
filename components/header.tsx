@@ -37,14 +37,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-24 items-center justify-between">
           <Link href="/" className="flex items-center gap-6">
             <Image
               src="/logo/logo.png"
               alt="LifeLine Logo"
-              width={150} // Reduced width
-              height={50} // Fixed height to fit header
-              className="h-12 w-auto rounded-xl" // Much smaller height
+              width={250}
+              height={80}
+              className="h-20 w-auto rounded-xl"
             />
           </Link>
 
