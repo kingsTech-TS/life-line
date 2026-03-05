@@ -13,7 +13,17 @@ export async function GET(req: NextRequest) {
       .limit(10)
       .populate('projectId', 'title');
 
-    return NextResponse.json(donations);
+    // Handle anonymous donations for public view
+    const publicDonations = donations.map(donation => {
+      const d = donation.toObject();
+      if (d.isAnonymous) {
+        d.donorName = 'Anonymous';
+        d.donorEmail = 'hidden';
+      }
+      return d;
+    });
+
+    return NextResponse.json(publicDonations);
   } catch (error) {
     console.error('Fetch donations error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

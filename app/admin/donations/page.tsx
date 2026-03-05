@@ -7,14 +7,20 @@ import {
   Search,
   Filter,
   Download,
-  MoreVertical,
-  Edit,
-  X,
+  Eye,
   Loader2,
+  X,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  User,
+  Mail,
+  CreditCard,
+  CalendarClock,
+  ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
 import {
   Dialog,
   DialogContent,
@@ -22,18 +28,37 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+function StatusBadge({ status }: { status: string }) {
+  if (status === "completed") {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-green-500/10 text-green-600 ring-1 ring-green-600/30">
+        <CheckCircle2 size={10} />
+        Successful
+      </span>
+    );
+  }
+  if (status === "failed") {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-500/10 text-red-600 ring-1 ring-red-600/30">
+        <XCircle size={10} />
+        Declined
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-orange-500/10 text-orange-600 ring-1 ring-orange-600/30">
+      <Clock size={10} />
+      Pending
+    </span>
+  );
+}
+
 export default function AdminDonations() {
   const [donations, setDonations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingItem, setEditingItem] = useState<any | null>(null);
-
-  const [formData, setFormData] = useState({
-    donorName: "",
-    status: "pending" as "pending" | "completed" | "failed",
-  });
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [viewingDonation, setViewingDonation] = useState<any | null>(null);
 
   const fetchDonations = async () => {
     try {
@@ -53,56 +78,34 @@ export default function AdminDonations() {
     fetchDonations();
   }, []);
 
-  const handleEdit = (donation: any) => {
-    setEditingItem(donation);
-    setFormData({
-      donorName: donation.donorName,
-      status: donation.status,
-    });
-    setIsDialogOpen(true);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const res = await fetch("/api/admin/donations", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, _id: editingItem._id }),
-      });
-
-      if (res.ok) {
-        toast.success("Donation updated successfully!");
-        setIsDialogOpen(false);
-        setEditingItem(null);
-        fetchDonations();
-      } else {
-        toast.error("Failed to update donation");
-      }
-    } catch (error) {
-      toast.error("An error occurred");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const filteredDonations = donations.filter(
-    (d) =>
+  const filteredDonations = donations.filter((d) => {
+    const matchesSearch =
       d.donorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       d.donorEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.paymentReference.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+      d.paymentReference.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === "all" || d.status === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
+  const totalCompleted = donations.filter(
+    (d) => d.status === "completed",
+  ).length;
+  const totalPending = donations.filter((d) => d.status === "pending").length;
+  const totalFailed = donations.filter((d) => d.status === "failed").length;
+  const totalAmount = donations
+    .filter((d) => d.status === "completed")
+    .reduce((sum, d) => sum + d.amount, 0);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
             Donations
           </h1>
           <p className="text-foreground/60 text-lg">
-            Manage and view all community contributions.
+            View all community contributions and their payment details.
           </p>
         </div>
         <Button className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-background border-2 border-primary/20 text-primary hover:bg-primary/5 shadow-sm transition-all hover:scale-105 active:scale-95 font-bold">
@@ -110,7 +113,51 @@ export default function AdminDonations() {
         </Button>
       </div>
 
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Total Raised",
+            value: `₦${totalAmount.toLocaleString()}`,
+            color: "text-primary",
+            bg: "bg-primary/5",
+          },
+          {
+            label: "Successful",
+            value: totalCompleted,
+            color: "text-green-600",
+            bg: "bg-green-500/5",
+          },
+          {
+            label: "Pending",
+            value: totalPending,
+            color: "text-orange-500",
+            bg: "bg-orange-500/5",
+          },
+          {
+            label: "Declined",
+            value: totalFailed,
+            color: "text-red-500",
+            bg: "bg-red-500/5",
+          },
+        ].map((stat) => (
+          <Card
+            key={stat.label}
+            className={`p-5 border-none shadow-sm ${stat.bg} rounded-2xl`}
+          >
+            <p className="text-xs font-black uppercase tracking-widest text-foreground/40">
+              {stat.label}
+            </p>
+            <p className={`text-3xl font-black mt-1 ${stat.color}`}>
+              {stat.value}
+            </p>
+          </Card>
+        ))}
+      </div>
+
+      {/* Table Card */}
       <Card className="p-8 rounded-[2rem] border-none shadow-xl shadow-foreground/5 bg-background/50 backdrop-blur-xl">
+        {/* Search & Filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1 group">
             <Search
@@ -124,16 +171,32 @@ export default function AdminDonations() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button
-            variant="outline"
-            className="h-14 px-6 rounded-2xl border-none bg-muted/30 hover:bg-muted/50 font-bold transition-all flex items-center gap-2"
-          >
-            <Filter size={18} /> Filters
-          </Button>
+          <div className="flex gap-2">
+            {["all", "completed", "pending", "failed"].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`px-4 h-14 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
+                  filterStatus === status
+                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                    : "bg-muted/30 text-foreground/50 hover:bg-muted/60"
+                }`}
+              >
+                {status === "all"
+                  ? "All"
+                  : status === "completed"
+                    ? "Successful"
+                    : status === "failed"
+                      ? "Declined"
+                      : "Pending"}
+              </button>
+            ))}
+          </div>
         </div>
 
+        {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-separate border-spacing-y-4">
+          <table className="w-full text-left border-separate border-spacing-y-3">
             <thead>
               <tr className="text-foreground/40">
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
@@ -143,23 +206,20 @@ export default function AdminDonations() {
                   Amount
                 </th>
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
-                  Project
-                </th>
-                <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
-                  Date
+                  Date & Time
                 </th>
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4 text-center">
                   Status
                 </th>
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest text-right px-6">
-                  Actions
+                  Details
                 </th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-20 text-center">
+                  <td colSpan={5} className="py-20 text-center">
                     <div className="flex flex-col items-center gap-4 text-foreground/40">
                       <Loader2
                         className="animate-spin text-primary"
@@ -173,7 +233,7 @@ export default function AdminDonations() {
                 </tr>
               ) : filteredDonations.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-20 text-center">
+                  <td colSpan={5} className="py-20 text-center">
                     <div className="flex flex-col items-center gap-4 opacity-30">
                       <Heart size={48} />
                       <span className="text-lg font-semibold italic">
@@ -186,57 +246,72 @@ export default function AdminDonations() {
                 filteredDonations.map((donation) => (
                   <tr
                     key={donation._id}
-                    className="group bg-muted/20 hover:bg-muted/40 transition-all rounded-3xl"
+                    className="group bg-muted/20 hover:bg-muted/40 transition-all rounded-3xl cursor-pointer"
+                    onClick={() => setViewingDonation(donation)}
                   >
-                    <td className="py-5 px-4 rounded-l-3xl">
+                    {/* Donor column */}
+                    <td className="py-4 px-4 rounded-l-2xl">
                       <div className="flex flex-col">
-                        <span className="font-bold text-foreground text-base group-hover:text-primary transition-colors">
-                          {donation.donorName}
-                        </span>
-                        <span className="text-xs text-foreground/40 italic">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-foreground text-base group-hover:text-primary transition-colors">
+                            {donation.donorName}
+                          </span>
+                          {donation.isAnonymous && (
+                            <span className="px-2 py-0.5 text-[8px] bg-blue-500/10 text-blue-600 rounded-full font-black uppercase tracking-widest border border-blue-500/20">
+                              Anon
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-foreground/40">
                           {donation.donorEmail}
                         </span>
                       </div>
                     </td>
-                    <td className="py-5 px-4 font-black text-primary">
+
+                    {/* Amount */}
+                    <td className="py-4 px-4 font-black text-primary text-lg">
                       ₦{donation.amount.toLocaleString()}
                     </td>
-                    <td className="py-5 px-4">
-                      <span className="text-sm font-medium text-foreground/70">
-                        {donation.projectId?.title || "General Fund"}
-                      </span>
-                    </td>
-                    <td className="py-5 px-4 text-sm text-foreground/40 font-medium">
-                      {new Date(donation.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="py-5 px-4 text-center">
-                      <span
-                        className={`
-                        inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1
-                        ${
-                          donation.status === "completed"
-                            ? "bg-green-500/10 text-green-600 ring-green-600/30"
-                            : donation.status === "pending"
-                              ? "bg-orange-500/10 text-orange-600 ring-orange-600/30"
-                              : "bg-red-500/10 text-red-600 ring-red-600/30"
-                        }
-                      `}
-                      >
-                        {donation.status}
-                      </span>
-                    </td>
-                    <td className="py-5 text-right px-6 rounded-r-3xl">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => handleEdit(donation)}
-                          className="p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border transition-all"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button className="text-foreground/40 hover:text-foreground transition-all p-2.5">
-                          <MoreVertical size={18} />
-                        </button>
+
+                    {/* Date & Time */}
+                    <td className="py-4 px-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-foreground/70">
+                          {new Date(donation.createdAt).toLocaleDateString(
+                            undefined,
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
+                        </span>
+                        <span className="text-[11px] text-foreground/40 font-medium">
+                          {new Date(donation.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
                       </div>
+                    </td>
+
+                    {/* Status */}
+                    <td className="py-4 px-4 text-center">
+                      <StatusBadge status={donation.status} />
+                    </td>
+
+                    {/* View button */}
+                    <td className="py-4 px-6 rounded-r-2xl text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setViewingDonation(donation);
+                        }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-2.5 bg-background hover:bg-primary/10 hover:text-primary rounded-xl shadow-sm border border-border"
+                        title="View full details"
+                      >
+                        <Eye size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -246,99 +321,187 @@ export default function AdminDonations() {
         </div>
       </Card>
 
-      {/* Edit Donation Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-          <div className="flex flex-col">
-            <DialogHeader className="p-8 pb-4 bg-muted/30">
-              <div className="flex justify-between items-center">
-                <div>
-                  <DialogTitle className="text-3xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">
-                    Edit Donation
-                  </DialogTitle>
-                  <p className="text-foreground/50 mt-2 font-medium">
-                    Update record for contribution{" "}
-                    {editingItem?.paymentReference}.
+      {/* View Details Dialog */}
+      <Dialog
+        open={!!viewingDonation}
+        onOpenChange={(open) => {
+          if (!open) setViewingDonation(null);
+        }}
+      >
+        <DialogContent className="max-w-lg p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+          {viewingDonation && (
+            <div className="flex flex-col">
+              {/* Header with status color */}
+              <div
+                className={`p-8 pb-6 ${
+                  viewingDonation.status === "completed"
+                    ? "bg-green-500/5"
+                    : viewingDonation.status === "failed"
+                      ? "bg-red-500/5"
+                      : "bg-orange-500/5"
+                }`}
+              >
+                <DialogHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <DialogTitle className="text-2xl font-black tracking-tight">
+                        Donation Details
+                      </DialogTitle>
+                      <p className="text-foreground/40 text-xs mt-1 font-mono">
+                        Ref: {viewingDonation.paymentReference}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <StatusBadge status={viewingDonation.status} />
+                      <button
+                        onClick={() => setViewingDonation(null)}
+                        className="p-2 rounded-full hover:bg-muted transition-colors"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </DialogHeader>
+              </div>
+
+              {/* Detail rows */}
+              <div className="p-8 space-y-5">
+                {/* Amount */}
+                <div
+                  className={`rounded-2xl p-5 text-center ${
+                    viewingDonation.status === "completed"
+                      ? "bg-green-500/5"
+                      : "bg-muted/30"
+                  }`}
+                >
+                  <p className="text-xs font-black uppercase tracking-widest text-foreground/40 mb-1">
+                    Amount Donated
+                  </p>
+                  <p
+                    className={`text-4xl font-black tracking-tighter ${
+                      viewingDonation.status === "completed"
+                        ? "text-green-600"
+                        : "text-foreground/50"
+                    }`}
+                  >
+                    ₦{viewingDonation.amount.toLocaleString()}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsDialogOpen(false)}
-                  className="rounded-full hover:bg-muted"
-                >
-                  <X size={24} />
-                </Button>
-              </div>
-            </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
-                  Donor Name
-                </label>
-                <Input
-                  required
-                  className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold text-lg"
-                  value={formData.donorName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, donorName: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
-                  Payment Status
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {["pending", "completed", "failed"].map((status) => (
-                    <button
-                      key={status}
-                      type="button"
-                      onClick={() =>
-                        setFormData({ ...formData, status: status as any })
+                {/* Donor Info */}
+                <div className="space-y-3">
+                  <DetailRow
+                    icon={<User size={14} />}
+                    label="Full Name"
+                    value={
+                      <div className="flex items-center gap-2">
+                        <span>{viewingDonation.donorName}</span>
+                        {viewingDonation.isAnonymous && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[8px] bg-blue-500/10 text-blue-600 rounded-full font-black uppercase tracking-widest border border-blue-500/20">
+                            <ShieldAlert size={8} /> Chose to donate anonymously
+                          </span>
+                        )}
+                      </div>
+                    }
+                  />
+                  <DetailRow
+                    icon={<Mail size={14} />}
+                    label="Email Address"
+                    value={viewingDonation.donorEmail}
+                  />
+                  <DetailRow
+                    icon={<CalendarClock size={14} />}
+                    label="Date & Time"
+                    value={new Date(viewingDonation.createdAt).toLocaleString(
+                      undefined,
+                      {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      },
+                    )}
+                  />
+                  {viewingDonation.paymentMethod && (
+                    <DetailRow
+                      icon={<CreditCard size={14} />}
+                      label="Payment Method"
+                      value={
+                        <span className="capitalize">
+                          {viewingDonation.paymentMethod}
+                          {viewingDonation.paymentDetails?.authorization?.last4
+                            ? ` ending in ${viewingDonation.paymentDetails.authorization.last4}`
+                            : ""}
+                          {viewingDonation.paymentDetails?.authorization?.bank
+                            ? ` — ${viewingDonation.paymentDetails.authorization.bank}`
+                            : ""}
+                        </span>
                       }
-                      className={`
-                        h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
-                        ${
-                          formData.status === status
-                            ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
-                            : "bg-muted/50 text-foreground/40 hover:bg-muted"
-                        }
-                      `}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-4">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => setIsDialogOpen(false)}
-                  className="h-14 rounded-2xl border-2 border-foreground/10 hover:bg-muted font-bold flex-1 transition-all"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-base shadow-xl shadow-primary/20 flex-1 transition-all hover:scale-105 active:scale-95"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="animate-spin" size={20} />
-                  ) : (
-                    "Update Record"
+                    />
                   )}
-                </Button>
+                  <DetailRow
+                    icon={<Heart size={14} />}
+                    label="Donation Type"
+                    value={
+                      <span className="capitalize">
+                        {viewingDonation.donationType || "One-time"}
+                      </span>
+                    }
+                  />
+                </div>
+
+                {/* Locked notice for finalised */}
+                {(viewingDonation.status === "completed" ||
+                  viewingDonation.status === "failed") && (
+                  <div
+                    className={`flex items-center gap-3 rounded-xl px-4 py-3 text-xs font-bold ${
+                      viewingDonation.status === "completed"
+                        ? "bg-green-500/10 text-green-700"
+                        : "bg-red-500/10 text-red-700"
+                    }`}
+                  >
+                    {viewingDonation.status === "completed" ? (
+                      <CheckCircle2 size={14} />
+                    ) : (
+                      <XCircle size={14} />
+                    )}
+                    {viewingDonation.status === "completed"
+                      ? "This payment was verified successful and cannot be modified."
+                      : "This transaction was declined. No funds were collected."}
+                  </div>
+                )}
               </div>
-            </form>
-          </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function DetailRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-4 p-4 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors">
+      <div className="mt-0.5 text-foreground/30">{icon}</div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-0.5">
+          {label}
+        </p>
+        <div className="text-sm font-bold text-foreground break-words">
+          {value}
+        </div>
+      </div>
     </div>
   );
 }

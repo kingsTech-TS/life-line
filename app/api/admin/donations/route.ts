@@ -25,6 +25,16 @@ export async function PUT(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
     const { _id, ...updateData } = body;
+
+    const existingDonation = await Donation.findById(_id);
+    if (!existingDonation) {
+      return NextResponse.json({ error: 'Donation not found' }, { status: 404 });
+    }
+
+    if (existingDonation.status === 'completed' || existingDonation.status === 'failed') {
+      return NextResponse.json({ error: 'Cannot edit a finalised donation (completed or declined)' }, { status: 400 });
+    }
+
     const donation = await Donation.findByIdAndUpdate(_id, updateData, { new: true });
     return NextResponse.json(donation);
   } catch (error) {

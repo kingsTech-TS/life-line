@@ -7,6 +7,9 @@ export interface IDonation extends Document {
   donationType: 'one-time' | 'recurring';
   paymentReference: string;
   status: 'pending' | 'completed' | 'failed';
+  isAnonymous: boolean;
+  paymentMethod?: string;
+  paymentDetails?: any;
   projectId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +23,9 @@ const DonationSchema: Schema = new Schema(
     donationType: { type: String, enum: ['one-time', 'recurring'], required: true },
     paymentReference: { type: String, required: true, unique: true },
     status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+    isAnonymous: { type: Boolean, default: false },
+    paymentMethod: { type: String },
+    paymentDetails: { type: Schema.Types.Mixed },
     projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
   },
   { timestamps: true }
