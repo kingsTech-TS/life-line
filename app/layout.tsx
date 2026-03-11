@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
+import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import GlobalCartWrapper from "@/components/GlobalCartWrapper";
 
@@ -57,7 +58,10 @@ export default function RootLayout({
           }}
         />
 
-        <script src="https://js.paystack.co/v1/inline.js"></script>
+        <Script
+          src="https://js.paystack.co/v1/inline.js"
+          strategy="beforeInteractive"
+        />
 
         <Script
           id="meta-pixel"
@@ -79,14 +83,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`font-sans antialiased`}>
-        <CartProvider>
-          <Header />
-          {children}
-          <Footer />
-          <GlobalCartWrapper />
-          <Analytics />
-          <ToastContainer position="bottom-right" theme="dark" />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Header />
+            {children}
+            <Footer />
+            <GlobalCartWrapper />
+            <Analytics />
+            <ToastContainer position="bottom-right" theme="dark" />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

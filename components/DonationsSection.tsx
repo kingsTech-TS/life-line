@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import PaymentModal from "./PaymentModal";
 
 type Cause = {
   title: string;
@@ -25,6 +26,7 @@ type Cause = {
 
 export default function DonationsSection() {
   const [selectedCause, setSelectedCause] = useState<Cause | null>(null);
+  const [paymentCause, setPaymentCause] = useState<any | null>(null);
   const [causes, setCauses] = useState<Cause[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,8 +41,10 @@ export default function DonationsSection() {
         const data = await response.json();
 
         const projects: Cause[] = data.map((project: any) => ({
+          id: project._id,
           title: project.title,
           description: project.description,
+          amountValue: project.goalAmount,
           amount: `₦${Number(project.goalAmount).toLocaleString()}`,
           country: project.country,
           image: project.image || "/placeholder.svg",
@@ -186,9 +190,7 @@ export default function DonationsSection() {
                     size="lg"
                     className="w-full bg-primary hover:bg-primary/90 text-white mt-4"
                     onClick={() => {
-                      alert(
-                        `Thank you for supporting ${selectedCause.title}! ❤️`,
-                      );
+                      setPaymentCause(selectedCause);
                       setSelectedCause(null);
                     }}
                   >
@@ -200,6 +202,21 @@ export default function DonationsSection() {
           </Dialog>
         )}
       </AnimatePresence>
+
+      {/* Payment Modal */}
+      {paymentCause && (
+        <PaymentModal
+          open={!!paymentCause}
+          onOpenChange={(open) => {
+            if (!open) setPaymentCause(null);
+          }}
+          amount={5000} // Default donation amount
+          title={`Support: ${paymentCause.title}`}
+          subtitle={paymentCause.country}
+          paymentSource="project"
+          projectId={paymentCause.id}
+        />
+      )}
     </section>
   );
 }

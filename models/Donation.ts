@@ -11,6 +11,8 @@ export interface IDonation extends Document {
   paymentMethod?: string;
   paymentDetails?: any;
   projectId?: mongoose.Types.ObjectId;
+  paymentSource?: 'donation' | 'project' | 'shop';
+  productName?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +29,8 @@ const DonationSchema: Schema = new Schema(
     paymentMethod: { type: String },
     paymentDetails: { type: Schema.Types.Mixed },
     projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
+    paymentSource: { type: String, enum: ['donation', 'project', 'shop'], default: 'donation' },
+    productName: { type: String },
   },
   { timestamps: true }
 );

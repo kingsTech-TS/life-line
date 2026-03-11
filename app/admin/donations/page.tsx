@@ -79,10 +79,15 @@ export default function AdminDonations() {
   }, []);
 
   const filteredDonations = donations.filter((d) => {
+    const searchLower = searchTerm.toLowerCase();
+    const searchName = (d.donorName || "").toLowerCase();
+    const searchEmail = (d.donorEmail || "").toLowerCase();
+    const searchRef = (d.paymentReference || "").toLowerCase();
+
     const matchesSearch =
-      d.donorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.donorEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.paymentReference.toLowerCase().includes(searchTerm.toLowerCase());
+      searchName.includes(searchLower) ||
+      searchEmail.includes(searchLower) ||
+      searchRef.includes(searchLower);
     const matchesFilter = filterStatus === "all" || d.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
@@ -206,6 +211,9 @@ export default function AdminDonations() {
                   Amount
                 </th>
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
+                  Source
+                </th>
+                <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
                   Date & Time
                 </th>
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4 text-center">
@@ -219,7 +227,7 @@ export default function AdminDonations() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="py-20 text-center">
+                  <td colSpan={6} className="py-20 text-center">
                     <div className="flex flex-col items-center gap-4 text-foreground/40">
                       <Loader2
                         className="animate-spin text-primary"
@@ -233,7 +241,7 @@ export default function AdminDonations() {
                 </tr>
               ) : filteredDonations.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-20 text-center">
+                  <td colSpan={6} className="py-20 text-center">
                     <div className="flex flex-col items-center gap-4 opacity-30">
                       <Heart size={48} />
                       <span className="text-lg font-semibold italic">
@@ -271,6 +279,39 @@ export default function AdminDonations() {
                     {/* Amount */}
                     <td className="py-4 px-4 font-black text-primary text-lg">
                       ₦{donation.amount.toLocaleString()}
+                    </td>
+
+                    {/* Source */}
+                    <td className="py-4 px-4 text-xs font-bold">
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`inline-flex items-center w-fit px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                            donation.paymentSource === "shop"
+                              ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
+                              : donation.paymentSource === "project"
+                                ? "bg-blue-500/10 text-blue-600 border border-blue-500/20"
+                                : "bg-primary/10 text-primary border border-primary/20"
+                          }`}
+                        >
+                          {donation.paymentSource === "shop"
+                            ? "🛍 Shop Purchase"
+                            : donation.paymentSource === "project"
+                              ? "🩺 Project Donation"
+                              : "❤️ General Donation"}
+                        </span>
+                        {donation.paymentSource === "project" &&
+                          donation.projectId?.title && (
+                            <span className="text-[10px] text-foreground/50 italic px-1 line-clamp-1 max-w-[150px]">
+                              {donation.projectId.title}
+                            </span>
+                          )}
+                        {donation.paymentSource === "shop" &&
+                          donation.productName && (
+                            <span className="text-[10px] text-foreground/50 italic px-1 line-clamp-1 max-w-[150px]">
+                              {donation.productName}
+                            </span>
+                          )}
+                      </div>
                     </td>
 
                     {/* Date & Time */}
@@ -444,11 +485,43 @@ export default function AdminDonations() {
                   )}
                   <DetailRow
                     icon={<Heart size={14} />}
-                    label="Donation Type"
+                    label="Transaction Source"
                     value={
-                      <span className="capitalize">
-                        {viewingDonation.donationType || "One-time"}
-                      </span>
+                      <div className="flex flex-col gap-1.5">
+                        <span
+                          className={`inline-flex items-center w-fit px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                            viewingDonation.paymentSource === "shop"
+                              ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
+                              : viewingDonation.paymentSource === "project"
+                                ? "bg-blue-500/10 text-blue-600 border border-blue-500/20"
+                                : "bg-primary/10 text-primary border border-primary/20"
+                          }`}
+                        >
+                          {viewingDonation.paymentSource === "shop"
+                            ? "🛍 Shop Purchase"
+                            : viewingDonation.paymentSource === "project"
+                              ? "🩺 Project Donation"
+                              : "❤️ General Donation"}
+                        </span>
+                        {viewingDonation.paymentSource === "project" &&
+                          viewingDonation.projectId?.title && (
+                            <p className="text-xs text-foreground/60 font-medium">
+                              Beneficiary Project:{" "}
+                              <span className="font-bold text-foreground">
+                                {viewingDonation.projectId.title}
+                              </span>
+                            </p>
+                          )}
+                        {viewingDonation.paymentSource === "shop" &&
+                          viewingDonation.productName && (
+                            <p className="text-xs text-foreground/60 font-medium">
+                              Product:{" "}
+                              <span className="font-bold text-foreground">
+                                {viewingDonation.productName}
+                              </span>
+                            </p>
+                          )}
+                      </div>
                     }
                   />
                 </div>

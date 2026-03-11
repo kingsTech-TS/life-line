@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+import { useAuth } from "./AuthContext";
 
 interface CartItem {
   id: string;
@@ -25,25 +32,85 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const isInitialMount = useRef(true);
+  const isSyncingFromUser = useRef(false);
 
-  // Load cart from localStorage on mount
+  // Load cart from user or localStorage on mount/login
   useEffect(() => {
-    const savedCart = localStorage.getItem("lifeline_cart");
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart));
-      } catch (e) {
-        console.error("Failed to parse cart from local storage");
+    if (user) {
+      // If user logs in, merge guest cart with user cart from DB
+      isSyncingFromUser.current = true;
+      const guestCart = localStorage.getItem("lifeline_cart");
+      let itemsToSet = user.cart || [];
+
+      if (guestCart) {
+        try {
+          const guestItems = JSON.parse(guestCart) as CartItem[];
+          if (guestItems.length > 0) {
+            const merged = [...itemsToSet];
+            guestItems.forEach((gItem) => {
+              const existingIndex = merged.findIndex(
+                (mItem) =>
+                  mItem.id === gItem.id &&
+                  JSON.stringify(mItem.variants) ===
+                    JSON.stringify(gItem.variants),
+              );
+              if (existingIndex > -1) {
+                merged[existingIndex].quantity += gItem.quantity;
+              } else {
+                merged.push(gItem);
+              }
+            });
+            itemsToSet = merged;
+            // Clear guest cart after merging
+            localStorage.removeItem("lifeline_cart");
+          }
+        } catch (e) {
+          console.error("Failed to parse guest cart during merge");
+        }
+      }
+
+      setCartItems(itemsToSet);
+      setTimeout(() => {
+        isSyncingFromUser.current = false;
+      }, 0);
+    } else {
+      // Guest user: Load from localStorage
+      const savedCart = localStorage.getItem("lifeline_cart");
+      if (savedCart) {
+        try {
+          setCartItems(JSON.parse(savedCart));
+        } catch (e) {
+          console.error("Failed to parse cart from local storage");
+        }
       }
     }
-  }, []);
+  }, [user]);
 
-  // Save cart to localStorage on change
+  // Save cart to database or localStorage on change
   useEffect(() => {
-    localStorage.setItem("lifeline_cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (isSyncingFromUser.current) return;
+
+    if (user) {
+      // Sync to database
+      fetch("/api/auth/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: cartItems }),
+      }).catch((err) => console.error("Failed to sync cart to DB", err));
+    } else {
+      // Save to localStorage for guest
+      localStorage.setItem("lifeline_cart", JSON.stringify(cartItems));
+    }
+  }, [cartItems, user]);
 
   const addToCart = (product: any, variants: { [key: string]: string }) => {
     setCartItems((prev) => {

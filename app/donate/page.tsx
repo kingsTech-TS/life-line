@@ -60,6 +60,7 @@ export default function Donate() {
           donorName,
           donationType,
           isAnonymous,
+          paymentSource: "donation",
         }),
       });
 

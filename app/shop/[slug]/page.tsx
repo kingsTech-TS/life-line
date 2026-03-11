@@ -15,9 +15,10 @@ import {
   Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useCart } from "@/context/CartContext";
+import PaymentModal from "@/components/PaymentModal";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -29,7 +30,7 @@ export default function ProductDetail() {
   const [selectedVariants, setSelectedVariants] = useState<{
     [key: string]: string;
   }>({});
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -58,47 +59,6 @@ export default function ProductDetail() {
 
     if (slug) fetchProduct();
   }, [slug, router]);
-
-  const handlePayNow = async () => {
-    if (!product) return;
-
-    setIsProcessing(true);
-    try {
-      // In a real Paystack implementation, you'd call your backend to initialize
-      // and then use the access_code or simply use the public key for simple cases.
-      // We'll use the public key approach for demonstration as per user's "Pay Now" request.
-
-      const config = {
-        key:
-          process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_placeholder",
-        email: "customer@line-line.org", // Should be fetched from a form/user session
-        amount: product.price * 100, // Paystack amount is in kobo
-        currency: "NGN",
-        ref: `LL-${Math.floor(Math.random() * 1000000000 + 1)}`,
-        callback: function (response: any) {
-          toast.success("Payment Successful! Ref: " + response.reference);
-          setIsProcessing(false);
-          // Redirect to success page or similar
-        },
-        onClose: function () {
-          toast.info("Payment window closed");
-          setIsProcessing(false);
-        },
-      };
-
-      if ((window as any).PaystackPop) {
-        const handler = (window as any).PaystackPop.setup(config);
-        handler.openIframe();
-      } else {
-        toast.error("Payment gateway could not be loaded. Please refresh.");
-        setIsProcessing(false);
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast.error("An error occurred during payment");
-      setIsProcessing(false);
-    }
-  };
 
   const addToCart = () => {
     if (!product) return;
@@ -273,15 +233,11 @@ export default function ProductDetail() {
                       <ShoppingCart size={22} /> Add to Cart
                     </Button>
                     <Button
-                      onClick={handlePayNow}
-                      disabled={product.stock === 0 || isProcessing}
+                      onClick={() => setShowPaymentModal(true)}
+                      disabled={product.stock === 0}
                       className="flex-1 h-20 rounded-[1.5rem] bg-primary text-white hover:bg-primary/90 text-lg font-black transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/20 flex items-center gap-3"
                     >
-                      {isProcessing ? (
-                        <Loader2 className="animate-spin" size={22} />
-                      ) : (
-                        <CreditCard size={22} />
-                      )}
+                      <CreditCard size={22} />
                       Pay Now
                     </Button>
                   </div>
@@ -327,6 +283,19 @@ export default function ProductDetail() {
           </div>
         </div>
       </main>
+
+      {/* Paystack Payment Modal */}
+      {product && (
+        <PaymentModal
+          open={showPaymentModal}
+          onOpenChange={setShowPaymentModal}
+          amount={product.price}
+          title={`Buy: ${product.name}`}
+          subtitle={`₦${product.price.toLocaleString()} · ${product.category}`}
+          paymentSource="shop"
+          productName={product.name}
+        />
+      )}
     </div>
   );
 }

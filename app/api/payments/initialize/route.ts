@@ -6,7 +6,7 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function POST(request: Request) {
   try {
-    const { amount, email, donorName, donationType, projectId, isAnonymous } = await request.json();
+    const { amount, email, donorName, donationType, projectId, isAnonymous, paymentSource, productName } = await request.json();
 
     // Validate inputs
     if (!amount || !email || !donorName) {
@@ -55,6 +55,8 @@ export async function POST(request: Request) {
       status: 'pending',
       isAnonymous: isAnonymous || false,
       projectId,
+      paymentSource: paymentSource || 'donation',
+      productName: productName || undefined,
     });
 
     console.log("[Payment] Initialization:", {

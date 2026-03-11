@@ -3,16 +3,27 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ShoppingCart,
+  User as UserIcon,
+  LogOut,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import AuthModal from "./AuthModal";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const pathname = usePathname();
   const { totalItems, setIsCartOpen } = useCart();
+  const { user, logout } = useAuth();
   const isAdminPage = pathname?.startsWith("/admin");
 
   if (isAdminPage) return null;
@@ -26,7 +37,7 @@ export default function Header() {
       label: "Impact",
       submenu: [
         { href: "/impact-report", label: "Our Impact Report" },
-        { href: "/donations", label: "Donations" },
+        // { href: "/donations", label: "Donations" },
         { href: "/projects", label: "Projects" },
         { href: "/blog", label: "Blog" },
       ],
@@ -95,6 +106,37 @@ export default function Header() {
                 </span>
               )}
             </button>
+
+            {user ? (
+              <div className="relative group/user">
+                <button className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  <UserIcon size={20} />
+                  <span>{user.name.split(" ")[0]}</span>
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg opacity-0 invisible group-hover/user:opacity-100 group-hover/user:visible transition-all duration-200 py-1">
+                  <div className="px-4 py-2 border-b border-border">
+                    <p className="text-xs font-semibold text-muted-foreground truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => logout()}
+                    className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted flex items-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors px-4 py-2"
+              >
+                Sign In
+              </button>
+            )}
+
             <Button asChild variant="default" size="sm">
               <Link href="/donate">Donate Now</Link>
             </Button>
@@ -159,7 +201,7 @@ export default function Header() {
                 )}
               </div>
             ))}
-            <div className="flex items-center justify-between px-4 py-2 border-t border-border mt-4 pt-4">
+            <div className="px-4 py-2 space-y-4 border-t border-border mt-4 pt-4">
               <button
                 onClick={() => {
                   setIsCartOpen(true);
@@ -177,6 +219,36 @@ export default function Header() {
                 </div>
                 Cart ({totalItems})
               </button>
+
+              {user ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <UserIcon size={20} />
+                    <span>{user.name}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                    className="text-sm font-medium text-destructive flex items-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsAuthModalOpen(true);
+                    setIsOpen(false);
+                  }}
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                >
+                  <UserIcon size={20} />
+                  Sign In
+                </button>
+              )}
             </div>
             <Button asChild className="w-full mt-4">
               <Link href="/donate">Donate Now</Link>
@@ -184,6 +256,10 @@ export default function Header() {
           </nav>
         )}
       </div>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </header>
   );
 }

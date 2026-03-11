@@ -8,25 +8,26 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
+import PaymentModal from "@/components/PaymentModal";
+import { Heart } from "lucide-react";
 
 export default function ProjectsClient() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
+  const [paymentProject, setPaymentProject] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const response = await fetch("/api/projects");
         const data = await response.json();
-
         if (Array.isArray(data)) {
-          setProjects(data); // Keep full data (don’t remap away needed fields)
+          setProjects(data);
         }
       } catch (error) {
         console.error("Failed to fetch projects:", error);
@@ -56,7 +57,7 @@ export default function ProjectsClient() {
           </h1>
           <p className="text-foreground/70 text-lg">
             Every LifeLine project is built on compassion, data, and community
-            collaboration. Together, we’re turning hope into health across
+            collaboration. Together, we're turning hope into health across
             Nigeria.
           </p>
         </div>
@@ -103,12 +104,19 @@ export default function ProjectsClient() {
                     </div>
                   </div>
 
-                  <div className="mt-6">
+                  <div className="mt-6 flex gap-3">
                     <Button
-                      className="w-full bg-primary hover:bg-primary/90 text-white"
+                      variant="outline"
+                      className="flex-1"
                       onClick={() => setSelectedProject(project)}
                     >
                       Learn More
+                    </Button>
+                    <Button
+                      className="flex-1 bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
+                      onClick={() => setPaymentProject(project)}
+                    >
+                      <Heart size={16} /> Donate
                     </Button>
                   </div>
                 </div>
@@ -117,7 +125,7 @@ export default function ProjectsClient() {
           ))}
         </div>
 
-        {/* Dialog */}
+        {/* Project Details Dialog */}
         <Dialog
           open={!!selectedProject}
           onOpenChange={(open) => {
@@ -127,7 +135,6 @@ export default function ProjectsClient() {
           <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto p-0 rounded-2xl md:rounded-3xl border-none shadow-2xl">
             {selectedProject && (
               <div className="flex flex-col">
-                {/* Image */}
                 <div className="relative w-full h-[220px] sm:h-[280px] md:h-[350px]">
                   <Image
                     src={selectedProject.image || "/placeholder.svg"}
@@ -139,7 +146,6 @@ export default function ProjectsClient() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 </div>
 
-                {/* Content */}
                 <div className="p-6 md:p-8">
                   <DialogHeader>
                     <DialogTitle className="text-2xl md:text-3xl font-bold mb-2">
@@ -163,25 +169,36 @@ export default function ProjectsClient() {
                     </p>
                   )}
 
-                  <DialogFooter>
-                    <Button
-                      size="lg"
-                      className="w-full bg-primary hover:bg-primary/90 text-white"
-                      onClick={() => {
-                        alert(
-                          `Thank you for supporting ${selectedProject.title}! ❤️`,
-                        );
-                        setSelectedProject(null);
-                      }}
-                    >
-                      Donate Now
-                    </Button>
-                  </DialogFooter>
+                  <Button
+                    size="lg"
+                    className="w-full bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
+                    onClick={() => {
+                      setSelectedProject(null);
+                      setPaymentProject(selectedProject);
+                    }}
+                  >
+                    <Heart size={18} /> Donate to This Project
+                  </Button>
                 </div>
               </div>
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Payment Modal */}
+        {paymentProject && (
+          <PaymentModal
+            open={!!paymentProject}
+            onOpenChange={(open) => {
+              if (!open) setPaymentProject(null);
+            }}
+            amount={5000}
+            title={`Support: ${paymentProject.title}`}
+            subtitle={paymentProject.country}
+            paymentSource="project"
+            projectId={paymentProject._id}
+          />
+        )}
       </div>
     </main>
   );
