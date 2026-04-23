@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ShopItem from '@/models/ShopItem';
+import mongoose from 'mongoose';
 
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
-    const items = await ShopItem.find({}).sort({ createdAt: -1 });
+    const items = await ShopItem.find({}).populate('vendorId', 'businessName').sort({ createdAt: -1 });
     return NextResponse.json(items);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch shop items' }, { status: 500 });
@@ -28,6 +29,15 @@ export async function POST(req: NextRequest) {
     } else if (body.slug) {
       body.slug = slugify(body.slug);
     }
+    
+    // Handle empty vendorId — remove it so it doesn't try to cast empty string
+    if (!body.vendorId || body.vendorId === '') {
+      delete body.vendorId;
+    } else if (mongoose.isValidObjectId(body.vendorId)) {
+      // Explicitly cast to ObjectId for consistent storage
+      body.vendorId = new mongoose.Types.ObjectId(body.vendorId);
+    }
+    
     const item = new ShopItem(body);
     await item.save();
     return NextResponse.json(item, { status: 201 });
@@ -47,6 +57,15 @@ export async function PUT(req: NextRequest) {
     } else if (updateData.name) {
       updateData.slug = slugify(updateData.name);
     }
+    
+    // Handle empty vendorId — set to null so it's unassigned
+    if (!updateData.vendorId || updateData.vendorId === '') {
+      updateData.vendorId = null;
+    } else if (mongoose.isValidObjectId(updateData.vendorId)) {
+      // Explicitly cast to ObjectId for consistent storage
+      updateData.vendorId = new mongoose.Types.ObjectId(updateData.vendorId);
+    }
+    
     const item = await ShopItem.findByIdAndUpdate(_id, updateData, { new: true });
     return NextResponse.json(item);
   } catch (error) {

@@ -6,8 +6,9 @@ export async function GET(req: NextRequest) {
   try {
     await dbConnect();
     
-    // Fetch all items, usually sorted by newest or category
+    // Fetch all items, populated with vendor info for display on the shop page
     const items = await ShopItem.find({})
+      .populate('vendorId', 'businessName')
       .sort({ createdAt: -1 });
 
     return NextResponse.json(items);

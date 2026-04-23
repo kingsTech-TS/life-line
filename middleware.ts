@@ -27,9 +27,28 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect vendor routes
+  if (pathname.startsWith('/vendor') && !pathname.startsWith('/vendor/login') && !pathname.startsWith('/vendor/signup')) {
+    const token = request.cookies.get('vendor_token')?.value;
+
+    if (!token) {
+      console.log('Middleware: No vendor token found in cookies');
+      return NextResponse.redirect(new URL('/vendor/login', request.url));
+    }
+
+    try {
+      const { payload } = await jose.jwtVerify(token, secret);
+      console.log('Middleware: Vendor token verified for:', payload.businessName);
+      return NextResponse.next();
+    } catch (e) {
+      console.error('Middleware: Vendor token verification failed:', e);
+      return NextResponse.redirect(new URL('/vendor/login', request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/vendor/:path*'],
 };

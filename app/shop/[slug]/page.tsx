@@ -179,8 +179,15 @@ export default function ProductDetail() {
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 leading-tight tracking-tighter">
                     {product.name}
                   </h1>
-                  <div className="text-4xl font-black text-primary">
-                    ₦{product.price.toLocaleString()}
+                  <div className="flex items-end gap-4 flex-wrap">
+                    <div className="text-4xl font-black text-primary">
+                      ₦{product.price.toLocaleString()}
+                    </div>
+                    {product.vendorId?.businessName && (
+                      <span className="mb-1 px-3 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-black uppercase tracking-widest border border-border/50">
+                        Sold by {product.vendorId.businessName}
+                      </span>
+                    )}
                   </div>
                 </div>
 

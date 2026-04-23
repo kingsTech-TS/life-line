@@ -17,8 +17,9 @@ import {
 export default function Footer() {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin");
+  const isVendorPage = pathname?.startsWith("/vendor");
 
-  if (isAdminPage) return null;
+  if (isAdminPage || isVendorPage) return null;
 
   return (
     <footer className="relative bg-zinc-950 text-zinc-400 overflow-hidden border-t border-zinc-800/50">
@@ -78,6 +79,7 @@ export default function Footer() {
                 { label: "Shop", href: "/shop" },
                 { label: "Impact Stories", href: "/impact" },
                 { label: "Contact Us", href: "/contact" },
+                { label: "Vendor Portal", href: "/vendor/login" },
               ].map((link) => (
                 <li key={link.label}>
                   <Link

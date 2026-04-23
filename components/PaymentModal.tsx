@@ -26,6 +26,16 @@ interface PaymentModalProps {
   projectId?: string;
   productName?: string;
   donationType?: "one-time" | "recurring";
+  items?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+    variants: Record<string, string>;
+    vendorId?: string;
+  }>;
+  deliveryAddress?: string;
 }
 
 export default function PaymentModal({
@@ -38,6 +48,8 @@ export default function PaymentModal({
   projectId,
   productName,
   donationType = "one-time",
+  items,
+  deliveryAddress,
 }: PaymentModalProps) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -70,6 +82,8 @@ export default function PaymentModal({
           paymentSource,
           productName,
           isAnonymous: false,
+          items, // Pass items for shop orders
+          deliveryAddress,
         }),
       });
 

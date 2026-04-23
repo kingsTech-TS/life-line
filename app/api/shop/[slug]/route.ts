@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
     }
 
-    const item = await ShopItem.findOne({ slug });
+    const item = await ShopItem.findOne({ slug }).populate('vendorId', 'businessName');
 
     if (!item) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Donation from "@/models/Donation";
+import Order from "@/models/Order";
 
 export async function GET(request: Request) {
   try {
@@ -54,6 +55,11 @@ export async function GET(request: Request) {
         { status: "failed" },
         { new: true }
       );
+      
+      await Order.findOneAndUpdate(
+        { paymentReference: reference },
+        { status: "cancelled" }
+      );
 
       return NextResponse.json(
         {
@@ -79,6 +85,12 @@ export async function GET(request: Request) {
         },
       },
       { new: true }
+    );
+
+    // Also update order if it exists
+    await Order.findOneAndUpdate(
+      { paymentReference: reference },
+      { status: "processing" } // Mark as processing once paid
     );
 
     if (!donation) {

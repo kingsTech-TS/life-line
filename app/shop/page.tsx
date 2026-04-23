@@ -148,9 +148,16 @@ export default function Shop() {
                     </div>
 
                     <div className="flex items-center justify-between pt-6 border-t border-border/50">
-                      <span className="text-2xl font-black text-foreground">
-                        ₦{product.price.toLocaleString()}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-2xl font-black text-foreground">
+                          ₦{product.price.toLocaleString()}
+                        </span>
+                        {product.vendorId?.businessName && (
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                            Sold by {product.vendorId.businessName}
+                          </span>
+                        )}
+                      </div>
                       <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                         <Plus size={20} />
                       </div>

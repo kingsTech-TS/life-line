@@ -25,8 +25,9 @@ export default function Header() {
   const { totalItems, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const isAdminPage = pathname?.startsWith("/admin");
+  const isVendorPage = pathname?.startsWith("/vendor");
 
-  if (isAdminPage) return null;
+  if (isAdminPage || isVendorPage) return null;
 
   const navLinks = [
     { href: "/", label: "Home" },

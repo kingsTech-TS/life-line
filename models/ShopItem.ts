@@ -14,6 +14,7 @@ export interface IShopItem extends Document {
     options: string[]; // e.g., ["S", "M", "L"]
   }[];
   isFeatured: boolean;
+  vendorId?: mongoose.Types.ObjectId | string; // Optional for platform-owned products
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +36,7 @@ const ShopItemSchema: Schema = new Schema(
       },
     ],
     isFeatured: { type: Boolean, default: false },
+    vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' },
   },
   { timestamps: true }
 );

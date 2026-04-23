@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Donation from "@/models/Donation";
+import Order from "@/models/Order";
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function POST(request: Request) {
   try {
-    const { amount, email, donorName, donationType, projectId, isAnonymous, paymentSource, productName } = await request.json();
+    const { 
+      amount, 
+      email, 
+      donorName, 
+      donationType, 
+      projectId, 
+      isAnonymous, 
+      paymentSource, 
+      productName,
+      items,
+      deliveryAddress
+    } = await request.json();
 
     // Validate inputs
     if (!amount || !email || !donorName) {
@@ -34,6 +46,8 @@ export async function POST(request: Request) {
           donorName,
           donationType,
           projectId,
+          paymentSource,
+          items, // Pass items to metadata for verification
         },
       }),
     });
@@ -45,13 +59,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: data.message || "Failed to initialize payment" }, { status: 400 });
     }
 
-    // Create a pending donation record in the database
+    const reference = data.data.reference;
+
+    // Create a pending donation record (common for all payments)
     const donation = await Donation.create({
       donorName,
       donorEmail: email,
       amount,
       donationType: donationType || 'one-time',
-      paymentReference: data.data.reference,
+      paymentReference: reference,
       status: 'pending',
       isAnonymous: isAnonymous || false,
       projectId,
@@ -59,10 +75,32 @@ export async function POST(request: Request) {
       productName: productName || undefined,
     });
 
+    // If it's a shop order, also create a pending Order record
+    if (paymentSource === 'shop' && items && items.length > 0) {
+      await Order.create({
+        items: items.map((item: any) => ({
+          productId: item.id,
+          vendorId: item.vendorId || 'platform', // Use 'platform' if no vendor
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          variants: item.variants,
+          image: item.image,
+        })),
+        customerId: email, // Use email as ID for now or find user ID
+        customerName: donorName,
+        customerEmail: email,
+        deliveryAddress: deliveryAddress || 'No address provided',
+        totalAmount: amount,
+        status: 'pending',
+        paymentReference: reference, // We should add this field to Order model
+      });
+    }
+
     console.log("[Payment] Initialization:", {
       donationId: donation._id,
       email,
-      reference: data.data.reference,
+      reference,
     });
 
     return NextResponse.json(

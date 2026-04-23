@@ -16,6 +16,7 @@ import {
   Search,
   ChevronRight,
   User,
+  Store,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ export default function AdminLayout({
     { href: "/admin/donations", label: "Donations", icon: Heart },
     { href: "/admin/impact", label: "Impact", icon: TrendingUp },
     { href: "/admin/shop", label: "Inventory", icon: ShoppingBag },
+    { href: "/admin/vendors", label: "Vendors", icon: Store },
     { href: "/admin/ambassadors", label: "Ambassadors", icon: User },
   ];
 

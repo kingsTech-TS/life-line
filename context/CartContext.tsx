@@ -16,6 +16,7 @@ interface CartItem {
   image: string;
   variants: { [key: string]: string };
   quantity: number;
+  vendorId?: string;
 }
 
 interface CartContextType {
@@ -136,6 +137,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           image: product.images?.[0] || product.image,
           variants,
           quantity: 1,
+          vendorId: product.vendorId,
         },
       ];
     });

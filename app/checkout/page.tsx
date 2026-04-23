@@ -132,6 +132,16 @@ export default function CheckoutPage() {
         subtitle={`${cartItems.length} items from LifeLine Shop`}
         paymentSource="shop"
         productName={cartItems.map((i) => i.name).join(", ")}
+        items={cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          variants: item.variants,
+          vendorId: (item as any).vendorId // Ensure vendorId is passed from cart
+        }))}
+        deliveryAddress={formData.address}
       />
     </div>
   );

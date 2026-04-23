@@ -30,6 +30,7 @@ import Image from "next/image";
 
 export default function AdminShop() {
   const [items, setItems] = useState<any[]>([]);
+  const [vendors, setVendors] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -45,6 +46,7 @@ export default function AdminShop() {
     price: 0,
     stock: 0,
     category: "",
+    vendorId: "",
     images: [] as string[],
     variants: [] as { type: string; options: string[] }[],
   });
@@ -58,13 +60,21 @@ export default function AdminShop() {
 
   const fetchItems = async () => {
     try {
-      const res = await fetch("/api/admin/shop");
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setItems(data);
+      const [itemsRes, vendorsRes] = await Promise.all([
+        fetch("/api/admin/shop"),
+        fetch("/api/admin/vendors"),
+      ]);
+      const itemsData = await itemsRes.json();
+      const vendorsData = await vendorsRes.json();
+      
+      if (Array.isArray(itemsData)) {
+        setItems(itemsData);
+      }
+      if (Array.isArray(vendorsData)) {
+        setVendors(vendorsData);
       }
     } catch (error) {
-      console.error("Failed to fetch shop items", error);
+      console.error("Failed to fetch data", error);
     } finally {
       setIsLoading(false);
     }
@@ -83,6 +93,7 @@ export default function AdminShop() {
       price: item.price,
       stock: item.stock,
       category: item.category,
+      vendorId: item.vendorId?._id || item.vendorId || "",
       images: item.images || (item.image ? [item.image] : []),
       variants: item.variants || [],
     });
@@ -306,6 +317,9 @@ export default function AdminShop() {
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
                   Category
                 </th>
+                <th className="pb-2 font-bold text-xs uppercase tracking-widest px-4">
+                  Vendor
+                </th>
                 <th className="pb-2 font-bold text-xs uppercase tracking-widest text-right px-6">
                   Actions
                 </th>
@@ -383,6 +397,23 @@ export default function AdminShop() {
                       <span className="px-3 py-1 rounded-full bg-zinc-500/10 text-zinc-500 text-[10px] font-black uppercase tracking-widest ring-1 ring-zinc-500/30">
                         {item.category}
                       </span>
+                    </td>
+                    <td className="py-5 px-4">
+                      {item.vendorId ? (
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-foreground">
+                            {typeof item.vendorId === 'object' ? item.vendorId.businessName : 
+                              vendors.find(v => v._id === item.vendorId)?.businessName || 'Unknown Vendor'}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground uppercase font-black">
+                            Vendor
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] font-black uppercase text-muted-foreground italic">
+                          Platform
+                        </span>
+                      )}
                     </td>
                     <td className="py-5 text-right px-6 rounded-r-3xl">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -533,6 +564,27 @@ export default function AdminShop() {
                         setFormData({ ...formData, category: e.target.value })
                       }
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1">
+                      Assign Vendor (Optional)
+                    </label>
+                    <select
+                      className="w-full h-14 px-4 rounded-2xl bg-muted/30 border-none focus:ring-2 focus:ring-primary font-bold appearance-none outline-none transition-all"
+                      value={formData.vendorId}
+                      onChange={(e) => setFormData({ ...formData, vendorId: e.target.value })}
+                    >
+                      <option value="">Platform Owned</option>
+                      {vendors.map((v) => (
+                        <option key={v._id} value={v._id}>
+                          {v.businessName}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-muted-foreground ml-2 font-medium">
+                      If assigned, this product will appear in the vendor's dashboard.
+                    </p>
                   </div>
 
                   <div className="space-y-2">
