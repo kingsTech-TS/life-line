@@ -8,7 +8,7 @@ const secret = new TextEncoder().encode(JWT_SECRET);
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const token = req.cookies.get('admin_token')?.value;
@@ -17,7 +17,8 @@ export async function PUT(
     }
     await jose.jwtVerify(token, secret);
 
-    const vendorId = params.id;
+    const resolvedParams = await params;
+    const vendorId = resolvedParams.id;
     const { commissionRate } = await req.json();
 
     if (typeof commissionRate !== 'number' || commissionRate < 0 || commissionRate > 100) {
