@@ -331,14 +331,15 @@ export default function VendorProducts() {
 
       {/* Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-[3rem] p-8">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col rounded-[3rem] p-8 overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="text-3xl font-black tracking-tight">
               {editingItem ? "Edit Product" : "Add New Product"}
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+          <div className="flex-1 overflow-y-auto pr-2 mt-6 custom-scrollbar">
+            <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">
@@ -495,7 +496,8 @@ export default function VendorProducts() {
                 "Create Product"
               )}
             </Button>
-          </form>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

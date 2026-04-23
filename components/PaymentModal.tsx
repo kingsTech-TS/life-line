@@ -54,6 +54,7 @@ export default function PaymentModal({
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePay = async () => {
@@ -63,6 +64,10 @@ export default function PaymentModal({
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       toast.error("Please enter a valid email address");
+      return;
+    }
+    if (paymentSource === "shop" && !address.trim()) {
+      toast.error("Please enter your delivery address");
       return;
     }
 
@@ -83,7 +88,7 @@ export default function PaymentModal({
           productName,
           isAnonymous: false,
           items, // Pass items for shop orders
-          deliveryAddress,
+          deliveryAddress: address || deliveryAddress,
         }),
       });
 
@@ -209,6 +214,19 @@ export default function PaymentModal({
                   className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold"
                 />
               </div>
+              {paymentSource === "shop" && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black uppercase tracking-widest text-foreground/40">
+                    Delivery Address
+                  </label>
+                  <Input
+                    placeholder="Enter full delivery address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary font-bold"
+                  />
+                </div>
+              )}
             </div>
 
             <Button

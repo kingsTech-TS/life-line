@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
+import Vendor from '@/models/Vendor';
 import * as jose from 'jose';
 import mongoose from 'mongoose';
 
@@ -19,6 +20,10 @@ export async function GET(req: NextRequest) {
 
     await dbConnect();
     
+    // Get vendor's current commission rate
+    const vendor = await Vendor.findById(vendorId);
+    const commissionRate = vendor?.commissionRate || 15;
+    
     // Find orders that contain items from this vendor
     // Robust query checking both string and ObjectId
     const orders = await Order.find({ 
@@ -33,7 +38,9 @@ export async function GET(req: NextRequest) {
       const vendorItems = order.items.filter((item: any) => 
         item.vendorId?.toString() === vendorId.toString()
       );
-      const vendorTotal = vendorItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+      
+      const rawTotal = vendorItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+      const vendorTotal = rawTotal * (1 - commissionRate / 100);
       
       return {
         _id: order._id,
@@ -47,7 +54,10 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(vendorSales);
+    return NextResponse.json({
+      sales: vendorSales,
+      commissionRate
+    });
   } catch (error) {
     console.error('Fetch vendor sales error:', error);
     return NextResponse.json({ error: 'Failed to fetch sales' }, { status: 500 });

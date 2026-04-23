@@ -301,6 +301,18 @@ export default function ProductDetail() {
           subtitle={`₦${product.price.toLocaleString()} · ${product.category}`}
           paymentSource="shop"
           productName={product.name}
+          items={[
+            {
+              id: product._id,
+              name: product.name,
+              price: product.price,
+              quantity: 1, // Single checkout for now, or get from state
+              image: product.image || product.images?.[0] || "",
+              variants: selectedVariants,
+              vendorId: product.vendorId?._id || product.vendorId, // Get vendor ID correctly whether populated or not
+            }
+          ]}
+          deliveryAddress="To be provided by user during payment"
         />
       )}
     </div>

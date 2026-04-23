@@ -36,6 +36,8 @@ export default function AdminVendors() {
   const [selectedVendor, setSelectedVendor] = useState<any | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [editingCommission, setEditingCommission] = useState(false);
+  const [newCommission, setNewCommission] = useState<number>(15);
 
   const fetchVendors = async () => {
     try {
@@ -113,6 +115,33 @@ export default function AdminVendors() {
       }
     } catch (error) {
       toast.error("Error deleting vendor");
+    }
+  };
+
+  const handleUpdateCommission = async () => {
+    if (!selectedVendor) return;
+    setActionLoading("commission");
+    try {
+      const res = await fetch(`/api/admin/vendors/${selectedVendor._id}/commission`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commissionRate: newCommission }),
+      });
+
+      if (res.ok) {
+        toast.success("Commission rate updated!");
+        const data = await res.json();
+        setSelectedVendor(data.vendor);
+        setEditingCommission(false);
+        fetchVendors();
+      } else {
+        const errData = await res.json();
+        toast.error(errData.error || "Failed to update commission");
+      }
+    } catch (error) {
+      toast.error("Error updating commission");
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -214,6 +243,8 @@ export default function AdminVendors() {
                   <button
                     onClick={() => {
                       setSelectedVendor(vendor);
+                      setNewCommission(vendor.commissionRate || 15);
+                      setEditingCommission(false);
                       setIsDetailsOpen(true);
                     }}
                     className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
@@ -390,9 +421,53 @@ export default function AdminVendors() {
                   </div>
                   <div className="flex items-start gap-3">
                     <Store size={18} className="text-primary mt-0.5" />
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Commission Rate</p>
-                      <p className="font-bold">{selectedVendor.commissionRate}%</p>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center">
+                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Platform Commission Rate</p>
+                        {!editingCommission && (
+                          <button 
+                            onClick={() => setEditingCommission(true)}
+                            className="text-[10px] font-black uppercase text-primary hover:underline"
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                      
+                      {editingCommission ? (
+                        <div className="flex items-center gap-2 mt-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={newCommission}
+                            onChange={(e) => setNewCommission(Number(e.target.value))}
+                            className="h-10 w-24 rounded-xl bg-background border-none focus-visible:ring-2 focus-visible:ring-primary font-bold"
+                          />
+                          <span className="font-bold text-muted-foreground">%</span>
+                          <div className="flex gap-2 ml-auto">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => setEditingCommission(false)}
+                              className="h-10 rounded-xl font-bold border-border/50"
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              onClick={handleUpdateCommission}
+                              disabled={actionLoading === "commission"}
+                              className="h-10 rounded-xl bg-primary text-white font-bold"
+                            >
+                              {actionLoading === "commission" ? <Loader2 className="animate-spin" size={16} /> : "Save"}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="font-bold text-lg mt-1">{selectedVendor.commissionRate || 15}%</p>
+                      )}
+                      <p className="text-[10px] text-muted-foreground font-medium mt-1">This is the percentage the platform keeps from each sale.</p>
                     </div>
                   </div>
                 </div>

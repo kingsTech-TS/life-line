@@ -8,6 +8,10 @@ export interface IVendor extends Document {
   address: string;
   commissionRate: number;
   isApproved: boolean;
+  paystackSubaccountCode?: string;
+  bankName?: string;
+  accountNumber?: string;
+  bankCode?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +25,10 @@ const VendorSchema: Schema = new Schema(
     address: { type: String, required: true },
     commissionRate: { type: Number, default: 15 },
     isApproved: { type: Boolean, default: false },
+    paystackSubaccountCode: { type: String },
+    bankName: { type: String },
+    accountNumber: { type: String },
+    bankCode: { type: String },
   },
   { timestamps: true }
 );

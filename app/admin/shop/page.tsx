@@ -16,10 +16,12 @@ import {
   Tag as TagIcon,
   DollarSign,
   Layers,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -230,6 +232,7 @@ export default function AdminShop() {
           price: 0,
           stock: 0,
           category: "",
+          vendorId: "",
           images: [],
           variants: [],
         });
@@ -262,25 +265,34 @@ export default function AdminShop() {
             Add and manage products in the LifeLine shop.
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setEditingItem(null);
-            setFormData({
-              name: "",
-              slug: "",
-              description: "",
-              price: 0,
-              stock: 0,
-              category: "",
-              images: [],
-              variants: [],
-            });
-            setIsDialogOpen(true);
-          }}
-          className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
-        >
-          <Plus size={20} /> <span className="font-bold">New Product</span>
-        </Button>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/shop/sales"
+            className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-muted/50 hover:bg-muted text-foreground border border-border/50 shadow-sm transition-all hover:scale-105 active:scale-95"
+          >
+            <TrendingUp size={20} /> <span className="font-bold">View Sales</span>
+          </Link>
+          <Button
+            onClick={() => {
+              setEditingItem(null);
+              setFormData({
+                name: "",
+                slug: "",
+                description: "",
+                price: 0,
+                stock: 0,
+                category: "",
+                vendorId: "",
+                images: [],
+                variants: [],
+              });
+              setIsDialogOpen(true);
+            }}
+            className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+          >
+            <Plus size={20} /> <span className="font-bold">New Product</span>
+          </Button>
+        </div>
       </div>
 
       <Card className="p-8 rounded-[2rem] border-none shadow-xl shadow-foreground/5 bg-background/50 backdrop-blur-xl">

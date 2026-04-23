@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Donation from "@/models/Donation";
 import Order from "@/models/Order";
+import Vendor from "@/models/Vendor";
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
@@ -32,6 +33,60 @@ export async function POST(request: Request) {
 
     await dbConnect();
 
+    // Check for dynamic split if it's a shop payment
+    let splitParams: any = undefined;
+
+    if (paymentSource === 'shop' && items && items.length > 0) {
+      const subaccounts: { subaccount: string, share: number }[] = [];
+      
+      for (const item of items) {
+        if (item.vendorId && item.vendorId !== 'platform') {
+          const vendor = await Vendor.findById(item.vendorId);
+          if (vendor && vendor.paystackSubaccountCode) {
+            const itemTotal = item.price * item.quantity;
+            const vendorShare = itemTotal * (1 - (vendor.commissionRate || 15) / 100);
+            
+            // Paystack expects the flat share in kobo
+            const shareInKobo = Math.round(vendorShare * 100);
+            
+            const existing = subaccounts.find(s => s.subaccount === vendor.paystackSubaccountCode);
+            if (existing) {
+              existing.share += shareInKobo;
+            } else {
+              subaccounts.push({
+                subaccount: vendor.paystackSubaccountCode,
+                share: shareInKobo
+              });
+            }
+          }
+        }
+      }
+
+      if (subaccounts.length > 0) {
+        splitParams = {
+          type: "flat",
+          bearer: "account", // Platform bears the Paystack processing fees
+          subaccounts
+        };
+      }
+    }
+
+    const paystackPayload: any = {
+      email,
+      amount: amount * 100, // Paystack expects amount in kobo
+      metadata: {
+        donorName,
+        donationType,
+        projectId,
+        paymentSource,
+        items, // Pass items to metadata for verification
+      },
+    };
+
+    if (splitParams) {
+      paystackPayload.split = splitParams;
+    }
+
     // Initialize Paystack transaction
     const response = await fetch("https://api.paystack.co/transaction/initialize", {
       method: "POST",
@@ -39,17 +94,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email,
-        amount: amount * 100, // Paystack expects amount in kobo
-        metadata: {
-          donorName,
-          donationType,
-          projectId,
-          paymentSource,
-          items, // Pass items to metadata for verification
-        },
-      }),
+      body: JSON.stringify(paystackPayload),
     });
 
     const data = await response.json();
