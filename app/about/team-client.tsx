@@ -193,22 +193,6 @@ export default function MeetTeamClient() {
           </div>
         </div>
       </main>
-
-      {/* ✅ CTA Section — placed above the footer */}
-      {/* <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Join Our Mission
-          </h2>
-          <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-            Whether through donations, volunteering, or partnerships, there are
-            many ways to support our work.
-          </p>
-          <Button asChild size="lg" variant="secondary">
-            <Link href="/donate">Get Involved</Link>
-          </Button>
-        </div>
-      </section> */}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ShopItem from '@/models/ShopItem';
-import mongoose from 'mongoose';
+import '@/models/Vendor'; // Import Vendor model to register its schema for population
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,12 +30,9 @@ export async function POST(req: NextRequest) {
       body.slug = slugify(body.slug);
     }
     
-    // Handle empty vendorId — remove it so it doesn't try to cast empty string
-    if (!body.vendorId || body.vendorId === '') {
+    // Handle empty vendorId
+    if (body.vendorId === '') {
       delete body.vendorId;
-    } else if (mongoose.isValidObjectId(body.vendorId)) {
-      // Explicitly cast to ObjectId for consistent storage
-      body.vendorId = new mongoose.Types.ObjectId(body.vendorId);
     }
     
     const item = new ShopItem(body);
@@ -58,12 +55,9 @@ export async function PUT(req: NextRequest) {
       updateData.slug = slugify(updateData.name);
     }
     
-    // Handle empty vendorId — set to null so it's unassigned
-    if (!updateData.vendorId || updateData.vendorId === '') {
+    // Handle empty vendorId
+    if (updateData.vendorId === '') {
       updateData.vendorId = null;
-    } else if (mongoose.isValidObjectId(updateData.vendorId)) {
-      // Explicitly cast to ObjectId for consistent storage
-      updateData.vendorId = new mongoose.Types.ObjectId(updateData.vendorId);
     }
     
     const item = await ShopItem.findByIdAndUpdate(_id, updateData, { new: true });

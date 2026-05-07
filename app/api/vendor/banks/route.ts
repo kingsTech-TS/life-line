@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 export async function GET() {
   try {
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
     if (!PAYSTACK_SECRET_KEY) {
       return NextResponse.json({ error: 'Paystack secret key is missing' }, { status: 500 });
     }

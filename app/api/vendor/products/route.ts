@@ -35,14 +35,15 @@ export async function GET(req: NextRequest) {
     const vendorId = payload.id as string;
 
     await dbConnect();
-
-    if (!mongoose.isValidObjectId(vendorId)) {
-      console.error('Invalid vendorId from JWT:', vendorId);
-      return NextResponse.json({ error: 'Invalid vendor identity' }, { status: 400 });
-    }
-
-    const vendorObjectId = new mongoose.Types.ObjectId(vendorId);
-    const items = await ShopItem.find({ vendorId: vendorObjectId }).sort({ createdAt: -1 });
+    // Search for both string and ObjectId to handle any legacy data
+    const query = { 
+      $or: [
+        { vendorId: vendorId },
+        { vendorId: mongoose.isValidObjectId(vendorId) ? new mongoose.Types.ObjectId(vendorId) : null }
+      ].filter(q => q.vendorId !== null)
+    };
+    
+    const items = await ShopItem.find(query).sort({ createdAt: -1 });
     console.log(`Fetched ${items.length} products for vendor ${vendorId}`);
     return NextResponse.json(items);
   } catch (error) {

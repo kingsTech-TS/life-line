@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ShopItem from '@/models/ShopItem';
+import '@/models/Vendor'; // Import Vendor model to register its schema for population
 
 export async function GET(req: NextRequest) {
   try {

@@ -110,6 +110,7 @@ export default function PaymentModal({
         email,
         amount: amount * 100, // Kobo
         reference: initData.reference,
+        channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
         metadata: {
           custom_fields: [
             {

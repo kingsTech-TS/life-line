@@ -3,7 +3,7 @@
 export const PAYMENT_INTEGRATIONS = {
   paystack: {
     name: "Paystack",
-    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_KEY || "pk_test_placeholder",
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_KEY,
     baseUrl: "https://api.paystack.co",
   },
   flutterwave: {

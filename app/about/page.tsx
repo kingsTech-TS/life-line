@@ -107,12 +107,12 @@ export default function About() {
       <MeetTeamClient />
 
       {/* CTA */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
+      {/* <section className="py-16 md:py-24 text-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Join Our Mission
           </h2>
-          <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
+          <p className="text-lg mb-8 opacity-90 max-w-2xl text-foreground mx-auto">
             Whether through donations, volunteering, or partnerships, there are
             many ways to support our work.
           </p>
@@ -120,12 +120,12 @@ export default function About() {
             asChild
             size="lg"
             variant="secondary"
-            className="bg-black text-white"
+            className="bg-black text-white hover:bg-black/80"
           >
             <Link href="/donate">Get Involved</Link>
           </Button>
         </div>
-      </section>
+      </section> */}
     </main>
   );
 }

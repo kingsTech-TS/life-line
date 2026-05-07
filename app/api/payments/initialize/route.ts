@@ -4,10 +4,10 @@ import Donation from "@/models/Donation";
 import Order from "@/models/Order";
 import Vendor from "@/models/Vendor";
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-
 export async function POST(request: Request) {
   try {
+    // Read secret key fresh each request
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
     const { 
       amount, 
       email, 
@@ -33,9 +33,37 @@ export async function POST(request: Request) {
 
     await dbConnect();
 
-    // Check for dynamic split if it's a shop payment
-    let splitParams: any = undefined;
+    const paystackPayload: any = {
+      email,
+      amount: amount * 100, // Paystack expects amount in kobo
+      metadata: {
+        custom_fields: [
+          {
+            display_name: "Donor Name",
+            variable_name: "donor_name",
+            value: donorName,
+          },
+          {
+            display_name: "Payment Source",
+            variable_name: "payment_source",
+            value: paymentSource,
+          },
+          {
+            display_name: "Donation Type",
+            variable_name: "donation_type",
+            value: donationType || "one-time",
+          },
+        ],
+        donorName,
+        donationType,
+        projectId,
+        paymentSource,
+        items, // Pass items to metadata for verification
+      },
+      channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
+    };
 
+    // Check for dynamic split if it's a shop payment
     if (paymentSource === 'shop' && items && items.length > 0) {
       const subaccounts: { subaccount: string, share: number }[] = [];
       
@@ -62,29 +90,22 @@ export async function POST(request: Request) {
         }
       }
 
-      if (subaccounts.length > 0) {
-        splitParams = {
+      if (subaccounts.length === 1) {
+        // Use standard single subaccount split (works on all Paystack accounts)
+        paystackPayload.subaccount = subaccounts[0].subaccount;
+        // transaction_charge is the amount the platform keeps.
+        // If subaccounts[0].share is what vendor gets, platform gets the rest.
+        const amountInKobo = amount * 100;
+        paystackPayload.transaction_charge = amountInKobo - subaccounts[0].share;
+        paystackPayload.bearer = "account"; // Platform bears processing fees
+      } else if (subaccounts.length > 1) {
+        // Requires Multi-Split to be enabled on the Paystack account
+        paystackPayload.split = {
           type: "flat",
-          bearer: "account", // Platform bears the Paystack processing fees
+          bearer: "account",
           subaccounts
         };
       }
-    }
-
-    const paystackPayload: any = {
-      email,
-      amount: amount * 100, // Paystack expects amount in kobo
-      metadata: {
-        donorName,
-        donationType,
-        projectId,
-        paymentSource,
-        items, // Pass items to metadata for verification
-      },
-    };
-
-    if (splitParams) {
-      paystackPayload.split = splitParams;
     }
 
     // Initialize Paystack transaction

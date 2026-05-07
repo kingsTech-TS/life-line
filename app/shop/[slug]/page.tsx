@@ -20,9 +20,12 @@ import { toast } from "react-toastify";
 import { useCart } from "@/context/CartContext";
 import PaymentModal from "@/components/PaymentModal";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function ProductDetail() {
   const { slug } = useParams();
   const router = useRouter();
+  const { user, openAuthModal } = useAuth();
   const { addToCart: addToCartGlobal, setIsCartOpen } = useCart();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,8 +66,14 @@ export default function ProductDetail() {
   const addToCart = () => {
     if (!product) return;
     addToCartGlobal(product, selectedVariants);
-    toast.success(`${product.name} added to cart!`);
-    setIsCartOpen(true);
+  };
+
+  const handlePayNow = () => {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    setShowPaymentModal(true);
   };
 
   if (loading) {
@@ -240,7 +249,7 @@ export default function ProductDetail() {
                       <ShoppingCart size={22} /> Add to Cart
                     </Button>
                     <Button
-                      onClick={() => setShowPaymentModal(true)}
+                      onClick={handlePayNow}
                       disabled={product.stock === 0}
                       className="flex-1 h-20 rounded-[1.5rem] bg-primary text-white hover:bg-primary/90 text-lg font-black transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/20 flex items-center gap-3"
                     >

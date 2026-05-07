@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ShopItem from '@/models/ShopItem';
 import Order from '@/models/Order';
+import Vendor from '@/models/Vendor';
 import * as jose from 'jose';
 import mongoose from 'mongoose';
 
@@ -29,22 +30,38 @@ export async function GET(req: NextRequest) {
       ].filter(q => q.vendorId !== null)
     });
 
+    // Get vendor's commission rate
+    const vendor = await Vendor.findById(vendorId);
+    const commission = vendor?.commissionRate || 15;
+
     // Get orders for this vendor's products
     const orders = await Order.find({ 
       'items.vendorId': { $in: [vendorId, mongoose.isValidObjectId(vendorId) ? new mongoose.Types.ObjectId(vendorId) : null].filter(v => v !== null) } 
-    });
+    }).sort({ createdAt: -1 });
     
     let totalSales = 0;
     let totalEarnings = 0;
     let totalOrders = orders.length;
+
+    const recentOrders = orders.slice(0, 5).map(order => {
+      let vendorOrderTotal = 0;
+      order.items.forEach((item: any) => {
+        if (item.vendorId?.toString() === vendorId.toString()) {
+          vendorOrderTotal += item.price * item.quantity;
+        }
+      });
+      // Replace totalAmount with vendor-specific total so dashboard shows only their part
+      return {
+        ...order.toObject(),
+        totalAmount: vendorOrderTotal
+      };
+    });
 
     orders.forEach(order => {
       order.items.forEach((item: any) => {
         if (item.vendorId?.toString() === vendorId.toString()) {
           const itemTotal = item.price * item.quantity;
           totalSales += itemTotal;
-          // Apply commission (default 15% if not found)
-          const commission = 15; // In a real app, fetch from vendor model
           totalEarnings += itemTotal * (1 - commission / 100);
         }
       });
@@ -55,7 +72,7 @@ export async function GET(req: NextRequest) {
       totalOrders,
       totalSales,
       totalEarnings,
-      recentOrders: orders.slice(0, 5) // Last 5 orders
+      recentOrders
     });
   } catch (error) {
     console.error('Vendor stats error:', error);

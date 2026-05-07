@@ -48,12 +48,15 @@ export default function VendorPurchases() {
     fetchSales();
   }, []);
 
-  const filteredSales = sales.filter(
-    (sale) =>
-      sale.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.items.some((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredSales = sales.filter((sale) => {
+    const term = searchTerm.toLowerCase();
+    const matchName = (sale.customerName || "").toLowerCase().includes(term);
+    const matchId = (sale._id || "").toLowerCase().includes(term);
+    const matchItem = (sale.items || []).some((item: any) =>
+      (item.name || "").toLowerCase().includes(term)
+    );
+    return matchName || matchId || matchItem;
+  });
 
   return (
     <div className="space-y-8 pb-10">
@@ -199,7 +202,7 @@ export default function VendorPurchases() {
                           <p className="text-sm text-primary/70 font-bold">After {commissionRate}% platform fee</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-3xl font-black text-primary tracking-tighter">₦{sale.vendorTotal.toLocaleString()}</p>
+                          <p className="text-3xl font-black text-primary tracking-tighter">₦{(sale.vendorTotal ?? 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>

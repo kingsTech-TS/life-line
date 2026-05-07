@@ -5,10 +5,9 @@ import * as jose from 'jose';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 const secret = new TextEncoder().encode(JWT_SECRET);
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-
 export async function POST(req: NextRequest) {
   try {
+    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
     const token = req.cookies.get('vendor_token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

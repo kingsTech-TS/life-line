@@ -3,13 +3,15 @@
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useEffect, useState } from "react";
-import PaymentModal from "@/components/PaymentModal";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function CheckoutPage() {
   const { user } = useAuth();
   const { cartItems, totalPrice, clearCart } = useCart();
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,7 +28,7 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = async () => {
     if (!formData.name || !formData.email || !formData.address) {
       toast.error("Please fill in all details including address");
       return;
@@ -35,7 +37,83 @@ export default function CheckoutPage() {
       toast.error("Your cart is empty");
       return;
     }
-    setShowPaymentModal(true);
+
+    setIsProcessing(true);
+
+    try {
+      // Step 1: Initialize on server
+      const initRes = await fetch("/api/payments/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalPrice,
+          email: formData.email,
+          donorName: formData.name,
+          paymentSource: "shop",
+          productName: cartItems.map((i) => i.name).join(", "),
+          isAnonymous: false,
+          items: cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image,
+            variants: item.variants,
+            vendorId: (item as any).vendorId
+          })),
+          deliveryAddress: formData.address,
+        }),
+      });
+
+      const initData = await initRes.json();
+
+      if (!initData.success) {
+        throw new Error(initData.error || "Failed to initialize payment");
+      }
+
+      // Step 2: Open Paystack popup directly
+      if (!(window as any).PaystackPop) {
+        toast.error("Payment system not loaded. Please refresh.");
+        setIsProcessing(false);
+        return;
+      }
+
+      const handler = (window as any).PaystackPop.setup({
+        key: process.env.NEXT_PUBLIC_PAYSTACK_KEY,
+        email: formData.email,
+        amount: totalPrice * 100, // Kobo
+        reference: initData.reference,
+        channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
+        metadata: {
+          custom_fields: [
+            {
+              display_name: "Customer Name",
+              variable_name: "customer_name",
+              value: formData.name,
+            },
+            {
+              display_name: "Payment Source",
+              variable_name: "payment_source",
+              value: "shop",
+            },
+          ],
+        },
+        callback: (response: any) => {
+          clearCart(); // Clear cart after successful payment
+          router.push(`/donate/success?reference=${response.reference}`);
+        },
+        onClose: () => {
+          setIsProcessing(false);
+          toast.info("Payment cancelled");
+        },
+      });
+
+      handler.openIframe();
+    } catch (err: any) {
+      console.error("[Checkout] Error:", err);
+      toast.error(err.message || "An error occurred. Please try again.");
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -88,10 +166,15 @@ export default function CheckoutPage() {
 
               <button
                 type="button"
-                className="w-full bg-primary text-white rounded p-3 mt-4 hover:opacity-90 transition-opacity font-bold"
+                disabled={isProcessing}
+                className="w-full bg-primary text-white rounded p-3 mt-4 hover:opacity-90 transition-opacity font-bold flex items-center justify-center disabled:opacity-70"
                 onClick={handleCompleteOrder}
               >
-                Complete Order (₦{totalPrice.toLocaleString()})
+                {isProcessing ? (
+                  <><Loader2 className="animate-spin mr-2" size={20} /> Processing...</>
+                ) : (
+                  `Complete Order (₦${totalPrice.toLocaleString()})`
+                )}
               </button>
             </form>
           </div>
@@ -124,25 +207,6 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <PaymentModal
-        open={showPaymentModal}
-        onOpenChange={setShowPaymentModal}
-        amount={totalPrice}
-        title="Payment for Order"
-        subtitle={`${cartItems.length} items from LifeLine Shop`}
-        paymentSource="shop"
-        productName={cartItems.map((i) => i.name).join(", ")}
-        items={cartItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-          variants: item.variants,
-          vendorId: (item as any).vendorId // Ensure vendorId is passed from cart
-        }))}
-        deliveryAddress={formData.address}
-      />
     </div>
   );
 }

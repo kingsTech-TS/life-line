@@ -8,6 +8,8 @@ import mongoose from 'mongoose';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 const secret = new TextEncoder().encode(JWT_SECRET);
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get('vendor_token')?.value;

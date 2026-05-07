@@ -25,6 +25,7 @@ interface DonationData {
   paymentReference?: string;
   paymentMethod?: string;
   donationType?: string;
+  paymentSource?: string;
   createdAt?: string;
   paymentDetails?: any;
 }
@@ -197,6 +198,8 @@ function SuccessContent() {
     return `${m.charAt(0).toUpperCase() + m.slice(1)}${last4 ? ` •••• ${last4}` : ""}${bank ? ` — ${bank}` : ""}`;
   })();
 
+  const isShop = donation?.paymentSource === "shop";
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50/40 to-background flex items-center justify-center px-4 py-16">
       <div className="max-w-lg w-full space-y-6">
@@ -210,7 +213,9 @@ function SuccessContent() {
               Payment Successful!
             </h1>
             <p className="text-foreground/50 mt-2">
-              Thank you for your generous contribution 🎉
+              {isShop
+                ? "Thank you for your order! Your payment has been received 🎉"
+                : "Thank you for your generous contribution 🎉"}
             </p>
           </div>
         </div>
@@ -224,7 +229,7 @@ function SuccessContent() {
             {/* Big amount */}
             <div className="text-center mb-6">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-1">
-                Amount Donated
+                {isShop ? "Amount Paid" : "Amount Donated"}
               </p>
               <p className="text-5xl font-black text-green-600 tracking-tighter">
                 ₦{displayAmount.toLocaleString()}
@@ -273,12 +278,16 @@ function SuccessContent() {
 
         {/* Actions */}
         <div className="flex gap-4">
-          <Link href="/donate" className="flex-1">
+          <Link href={isShop ? "/shop" : "/donate"} className="flex-1">
             <Button
               variant="outline"
               className="w-full h-14 rounded-2xl font-bold border-2"
             >
-              <Heart className="mr-2 w-4 h-4" /> Donate Again
+              {isShop ? (
+                "Continue Shopping"
+              ) : (
+                <><Heart className="mr-2 w-4 h-4" /> Donate Again</>
+              )}
             </Button>
           </Link>
           <Link href="/" className="flex-1">

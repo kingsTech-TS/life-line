@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import GlobalCartWrapper from "@/components/GlobalCartWrapper";
+import AuthModal from "@/components/AuthModal";
 
 export default function RootLayout({
   children,
@@ -89,6 +90,7 @@ export default function RootLayout({
             {children}
             <Footer />
             <GlobalCartWrapper />
+            <AuthModal />
             <Analytics />
             <ToastContainer position="bottom-right" theme="dark" />
           </CartProvider>

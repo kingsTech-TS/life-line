@@ -73,8 +73,6 @@ export default function Shop() {
     e.stopPropagation();
     if (product.stock === 0) return toast.error("Out of stock");
     addToCart(product, {});
-    toast.success(`${product.name} added to cart!`);
-    setIsCartOpen(true);
   };
 
   return (

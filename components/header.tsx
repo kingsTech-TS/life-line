@@ -20,10 +20,9 @@ import AuthModal from "./AuthModal";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const pathname = usePathname();
   const { totalItems, setIsCartOpen } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, openAuthModal } = useAuth();
   const isAdminPage = pathname?.startsWith("/admin");
   const isVendorPage = pathname?.startsWith("/vendor");
 
@@ -52,11 +51,11 @@ export default function Header() {
         <div className="flex h-24 items-center justify-between">
           <Link href="/" className="flex items-center gap-6">
             <Image
-              src="/logo/logo.png"
+              src="/logo/LL-dark.png"
               alt="LifeLine Logo"
-              width={250}
-              height={80}
-              className="h-20 w-auto rounded-xl"
+              width={300}
+              height={100}
+              className="h-24 w-auto rounded-xl"
             />
           </Link>
 
@@ -96,17 +95,19 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-foreground hover:text-primary transition-colors"
-            >
-              <ShoppingCart size={24} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
-                  {totalItems}
-                </span>
-              )}
-            </button>
+            {user && (
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 text-foreground hover:text-primary transition-colors"
+              >
+                <ShoppingCart size={24} />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            )}
 
             {user ? (
               <div className="relative group/user">
@@ -131,7 +132,7 @@ export default function Header() {
               </div>
             ) : (
               <button
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={openAuthModal}
                 className="text-sm font-medium text-foreground hover:text-primary transition-colors px-4 py-2"
               >
                 Sign In
@@ -203,23 +204,25 @@ export default function Header() {
               </div>
             ))}
             <div className="px-4 py-2 space-y-4 border-t border-border mt-4 pt-4">
-              <button
-                onClick={() => {
-                  setIsCartOpen(true);
-                  setIsOpen(false);
-                }}
-                className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
-              >
-                <div className="relative">
-                  <ShoppingCart size={20} />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
-                      {totalItems}
-                    </span>
-                  )}
-                </div>
-                Cart ({totalItems})
-              </button>
+              {user && (
+                <button
+                  onClick={() => {
+                    setIsCartOpen(true);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
+                >
+                  <div className="relative">
+                    <ShoppingCart size={20} />
+                    {totalItems > 0 && (
+                      <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
+                        {totalItems}
+                      </span>
+                    )}
+                  </div>
+                  Cart ({totalItems})
+                </button>
+              )}
 
               {user ? (
                 <div className="space-y-2">
@@ -241,7 +244,7 @@ export default function Header() {
               ) : (
                 <button
                   onClick={() => {
-                    setIsAuthModalOpen(true);
+                    openAuthModal();
                     setIsOpen(false);
                   }}
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2"
@@ -257,10 +260,6 @@ export default function Header() {
           </nav>
         )}
       </div>
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
     </header>
   );
 }

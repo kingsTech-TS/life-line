@@ -33,7 +33,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const isInitialMount = useRef(true);
@@ -114,6 +114,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartItems, user]);
 
   const addToCart = (product: any, variants: { [key: string]: string }) => {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
     setCartItems((prev) => {
       // Check if item with same ID and variants already exists
       const existingItemIndex = prev.findIndex(
@@ -137,10 +141,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           image: product.images?.[0] || product.image,
           variants,
           quantity: 1,
-          vendorId: product.vendorId,
+          vendorId: typeof product.vendorId === 'object' && product.vendorId !== null ? product.vendorId._id : product.vendorId,
         },
       ];
     });
+    toast.success(`${product.name} added to cart!`);
     setIsCartOpen(true);
   };
 
