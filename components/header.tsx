@@ -53,9 +53,9 @@ export default function Header() {
             <Image
               src="/logo/LL-dark.png"
               alt="LifeLine Logo"
-              width={300}
-              height={100}
-              className="h-24 w-auto rounded-xl"
+              width={150}
+              height={50}
+              className="h-12 w-auto rounded-xl"
             />
           </Link>
 

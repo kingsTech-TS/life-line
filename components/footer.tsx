@@ -38,9 +38,9 @@ export default function Footer() {
               <Image
                 src="/logo/LL-light.png"
                 alt="LifeLine Logo"
-                width={450}
-                height={250}
-                className="h-40 w-auto"
+                width={200}
+                height={100}
+                className="h-16 w-auto"
               />
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
