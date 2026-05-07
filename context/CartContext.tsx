@@ -8,6 +8,7 @@ import React, {
   useRef,
 } from "react";
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 interface CartItem {
   id: string;
