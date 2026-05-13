@@ -57,7 +57,7 @@ export default function Home() {
   const faqs = [
     {
       q: "Who’s behind Lifeline?",
-      a: "Lifeline is powered by a collective of people and partners committed to building black communities globally.",
+      a: "Lifeline is powered by Restora Africa committed to building black communities globally.",
     },
     {
       q: "How can I learn more about your governance and legal structure?",
@@ -65,7 +65,7 @@ export default function Home() {
     },
     {
       q: "Is Lifeline a registered charity?",
-      a: "Yes, Lifeline is a legally registered non-profit organization.",
+      a: "LifeLine is a community outreach program organized by Restora Africa. Restora Africa is a Registered NGO.",
     },
     {
       q: "How does Lifeline select and vet project partners?",
@@ -260,8 +260,8 @@ export default function Home() {
             Our Open Ledger
           </h2>
 
-          <Button variant="outline" size="lg" className="mb-16">
-            View transactions
+          <Button variant="outline" size="lg" className="mb-16" asChild>
+            <Link href="/finances">View real-time transactions</Link>
           </Button>
 
           <div className="max-w-2xl mx-auto space-y-8 text-left text-lg">

@@ -189,7 +189,7 @@ export default function Footer() {
             />{" "}
             for humanity.
           </p>
-          <div className="flex items-center gap-8">
+          {/* <div className="flex items-center gap-8">
             <Link href="#" className="hover:text-primary transition-colors">
               Accessibility
             </Link>
@@ -199,7 +199,7 @@ export default function Footer() {
             <Link href="#" className="hover:text-primary transition-colors">
               Sitemap
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

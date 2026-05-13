@@ -58,6 +58,21 @@ export default function VendorPurchases() {
     return matchName || matchId || matchItem;
   });
 
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/vendor/purchases/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        setSales(sales.map(s => s._id === orderId ? { ...s, status: newStatus } : s));
+      }
+    } catch (error) {
+      console.error("Failed to update status", error);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -168,13 +183,27 @@ export default function VendorPurchases() {
                         <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <Package size={16} /> Items Purchased
                         </h3>
-                        <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                            sale.status === 'delivered' ? 'bg-green-500/10 text-green-500' :
-                            sale.status === 'shipped' ? 'bg-blue-500/10 text-blue-500' :
-                            'bg-amber-500/10 text-amber-600'
-                          }`}>
-                            {sale.status || 'Processing'}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <select 
+                            value={sale.status || 'pending'}
+                            onChange={(e) => handleStatusUpdate(sale._id, e.target.value)}
+                            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-none outline-none ring-1 ring-border/50 bg-background cursor-pointer hover:ring-primary/50 transition-all ${
+                              sale.status === 'delivered' ? 'text-green-500 bg-green-500/5' :
+                              sale.status === 'shipped' ? 'text-blue-500 bg-blue-500/5' :
+                              sale.status === 'out_for_delivery' ? 'text-purple-500 bg-purple-500/5' :
+                              sale.status === 'packed' ? 'text-cyan-500 bg-cyan-500/5' :
+                              'text-amber-600 bg-amber-500/5'
+                            }`}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="packed">Packed</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="out_for_delivery">Ready for Delivery</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div className="flex-1 space-y-3">

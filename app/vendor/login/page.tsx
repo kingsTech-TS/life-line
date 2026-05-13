@@ -64,9 +64,9 @@ export default function VendorLogin() {
             className="mb-8 flex justify-center"
           >
             <Image
-              src="/logo/logo.png"
+              src="/logo/LL-dark.png"
               alt="LifeLine Logo"
-              width={180}
+              width={120}
               height={60}
               className="h-16 w-auto"
             />

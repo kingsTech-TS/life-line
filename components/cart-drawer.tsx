@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function CartDrawer({ open, onClose, items, onRemove }: any) {
   const totalPrice = items.reduce((sum: number, item: any) => {
@@ -121,15 +122,25 @@ export default function CartDrawer({ open, onClose, items, onRemove }: any) {
             className="w-full h-16 rounded-2xl bg-primary text-white hover:bg-primary/90 font-black text-lg shadow-xl shadow-primary/20 transition-all hover:scale-[1.02]"
             asChild
           >
-            <a href="/checkout">Checkout Now</a>
+            <Link href="/checkout">Checkout Now</Link>
           </Button>
 
-          <button
-            onClick={onClose}
-            className="w-full text-xs font-black uppercase tracking-[0.2em] text-foreground/30 hover:text-primary transition-colors"
-          >
-            Continue Shopping
-          </button>
+          <div className="flex flex-col gap-4">
+            <Link 
+              href="/cart"
+              onClick={onClose}
+              className="w-full py-3 rounded-xl border border-border flex items-center justify-center text-sm font-black uppercase tracking-widest hover:bg-muted transition-all"
+            >
+              View Full Cart
+            </Link>
+
+            <button
+              onClick={onClose}
+              className="w-full text-xs font-black uppercase tracking-[0.2em] text-foreground/30 hover:text-primary transition-colors"
+            >
+              Continue Shopping
+            </button>
+          </div>
         </div>
       </motion.div>
     </>

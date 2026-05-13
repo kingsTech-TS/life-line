@@ -16,7 +16,7 @@ export interface IOrder extends Document {
   deliveryAddress: string;
   totalAmount: number;
   paymentReference: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,7 +42,7 @@ const OrderSchema: Schema = new Schema(
     paymentReference: { type: String, required: true },
     status: {
       type: String,
-      enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+      enum: ['pending', 'processing', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'],
       default: 'pending',
     },
   },

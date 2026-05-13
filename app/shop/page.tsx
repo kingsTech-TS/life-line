@@ -18,6 +18,7 @@ import {
   SlidersHorizontal,
   X,
   Store,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -138,8 +139,8 @@ export default function Shop() {
             className="flex flex-wrap items-center justify-center gap-4 mt-10"
           >
             {[
-              { icon: Truck, label: "Free Delivery over ₦20k" },
-              { icon: Shield, label: "Secure Checkout" },
+              { icon: Truck, label: "Fast Delivery" },
+              { icon: Shield, label: "Secure Payment" },
               { icon: RefreshCw, label: "Easy Returns" },
             ].map((f) => (
               <div key={f.label} className="flex items-center gap-2 text-xs text-white/70 font-bold">
@@ -147,6 +148,11 @@ export default function Shop() {
                 {f.label}
               </div>
             ))}
+            <div className="mt-8 pt-8 border-t border-white/10 w-full flex justify-center">
+              <Link href="/shop/track-order" className="text-xs font-black uppercase tracking-[0.2em] text-white hover:text-primary transition-colors flex items-center gap-2 group">
+                Track Your Order <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -342,7 +348,7 @@ export default function Shop() {
           <div>
             <h4 className="font-black text-sm uppercase tracking-widest mb-4 text-primary">Shop Info</h4>
             <div className="space-y-2 text-sm text-muted-foreground font-medium">
-              <p>Free shipping on orders above ₦20,000</p>
+              <p>Fast delivery on orders above ₦20,000</p>
               <p>Delivery within 3–5 working days</p>
               <p>Secure payment via Paystack</p>
               <p>Returns accepted within 7 days</p>

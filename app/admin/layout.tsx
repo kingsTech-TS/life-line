@@ -96,7 +96,7 @@ export default function AdminLayout({
               <Link href="/admin/dashboard" className="flex items-center gap-4 group">
                 <div className="w-12 h-12 bg-primary rounded-[1.25rem] flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
                   <Image
-                    src="/logo/logo.png"
+                    src="/logo/LL-dark.png"
                     alt="L"
                     width={24}
                     height={24}

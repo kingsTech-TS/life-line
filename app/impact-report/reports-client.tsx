@@ -11,11 +11,13 @@ import {
   DialogTitle,
 } from "../../components/ui/dialog";
 
-const metrics = [
-  { label: "Amount deployed this quarter", value: "₦0" },
-  { label: "People supported", value: "0" },
-  { label: "Active initiatives", value: "0" },
-  { label: "Countries reached", value: "1" },
+import Link from "next/link";
+
+const staticMetrics = [
+  { label: "Amount deployed this quarter", value: "₦0", key: "totalRevenue" },
+  { label: "People supported", value: "0", key: "livesImpacted" },
+  { label: "Active initiatives", value: "0", key: "projectCount" },
+  { label: "Countries reached", value: "1", key: null },
 ];
 
 // const regionData = [
@@ -43,23 +45,40 @@ export default function ReportsClient() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
+  const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
-    const fetchReports = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/impact");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setReports(data);
-        }
+        const [reportsRes, statsRes] = await Promise.all([
+          fetch("/api/impact"),
+          fetch("/api/finances/stats")
+        ]);
+        
+        const reportsData = await reportsRes.json();
+        const statsData = await statsRes.json();
+
+        if (Array.isArray(reportsData)) setReports(reportsData);
+        setStats(statsData);
       } catch (error) {
-        console.error("Failed to fetch reports", error);
+        console.error("Failed to fetch impact data", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchReports();
+    fetchData();
   }, []);
+
+  const displayMetrics = staticMetrics.map(m => {
+    if (m.key && stats?.summary) {
+      const val = stats.summary[m.key];
+      return { 
+        ...m, 
+        value: m.key.includes('Revenue') ? `₦${val.toLocaleString()}` : val.toLocaleString() 
+      };
+    }
+    return m;
+  });
 
   return (
     <main className="bg-muted/30 py-20 md:py-28">
@@ -82,18 +101,18 @@ export default function ReportsClient() {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-          {metrics.map((m, i) => (
+          {displayMetrics.map((m, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
             >
-              <Card className="p-6 text-center bg-background/80 backdrop-blur-sm rounded-2xl">
-                <div className="text-3xl font-bold text-primary mb-2">
+              <Card className="p-6 text-center bg-background/80 backdrop-blur-sm rounded-2xl border-primary/10">
+                <div className="text-3xl font-black text-primary mb-2 tracking-tighter">
                   {m.value}
                 </div>
-                <div className="text-sm text-foreground/70">{m.label}</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-foreground/40">{m.label}</div>
               </Card>
             </motion.div>
           ))}
@@ -204,18 +223,23 @@ export default function ReportsClient() {
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-16"
+          className="text-center py-20 bg-primary/5 rounded-[3rem] border border-primary/10 px-6"
         >
-          <h2 className="text-3xl font-bold text-foreground mb-4">
-            Want a deeper dive?
+          <h2 className="text-3xl font-black text-foreground mb-4 tracking-tight">
+            Radical Financial Transparency
           </h2>
-          <p className="text-lg text-foreground/70 mb-8">
-            Quarterly reports will be available for download here, including
-            financials, audits, and full project data.
+          <p className="text-lg text-foreground/70 mb-10 max-w-2xl mx-auto">
+            Our quarterly reports include detailed financials, independent audits, and full project data. 
+            You can also view our live financial ledger at any time.
           </p>
-          <Button size="lg" className="bg-primary text-white rounded-xl px-10">
-            Download the report
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-primary text-white rounded-xl px-10 font-bold h-14">
+              Download Full PDF Report
+            </Button>
+            <Button variant="outline" size="lg" className="rounded-xl px-10 font-bold h-14 border-primary text-primary hover:bg-primary/5" asChild>
+              <Link href="/finances">View Live Ledger</Link>
+            </Button>
+          </div>
         </motion.div>
       </div>
 

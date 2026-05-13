@@ -29,6 +29,7 @@ interface CartContextType {
   totalPrice: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  updateQuantity: (id: string, variants: { [key: string]: string }, quantity: number) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -170,6 +171,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     0,
   );
 
+  const updateQuantity = (id: string, variants: { [key: string]: string }, quantity: number) => {
+    if (quantity < 1) return;
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id && JSON.stringify(item.variants) === JSON.stringify(variants)
+          ? { ...item, quantity }
+          : item
+      )
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -181,6 +193,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         totalPrice,
         isCartOpen,
         setIsCartOpen,
+        updateQuantity,
       }}
     >
       {children}

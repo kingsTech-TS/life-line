@@ -96,8 +96,8 @@ export default function Header() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             {user && (
-              <button
-                onClick={() => setIsCartOpen(true)}
+              <Link
+                href="/cart"
                 className="relative p-2 text-foreground hover:text-primary transition-colors"
               >
                 <ShoppingCart size={24} />
@@ -106,7 +106,7 @@ export default function Header() {
                     {totalItems}
                   </span>
                 )}
-              </button>
+              </Link>
             )}
 
             {user ? (
@@ -205,11 +205,9 @@ export default function Header() {
             ))}
             <div className="px-4 py-2 space-y-4 border-t border-border mt-4 pt-4">
               {user && (
-                <button
-                  onClick={() => {
-                    setIsCartOpen(true);
-                    setIsOpen(false);
-                  }}
+                <Link
+                  href="/cart"
+                  onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
                 >
                   <div className="relative">
@@ -221,7 +219,7 @@ export default function Header() {
                     )}
                   </div>
                   Cart ({totalItems})
-                </button>
+                </Link>
               )}
 
               {user ? (

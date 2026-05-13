@@ -64,7 +64,7 @@ export default function AdminLogin() {
             className="mb-8 flex justify-center"
           >
             <Image
-              src="/logo/logo.png"
+              src="/logo/LL-dark.png"
               alt="LifeLine Logo"
               width={180}
               height={60}
