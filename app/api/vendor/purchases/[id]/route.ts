@@ -8,9 +8,10 @@ const secret = new TextEncoder().encode(JWT_SECRET);
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: orderId } = await params;
     const token = req.cookies.get('vendor_token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -21,7 +22,6 @@ export async function PATCH(
     // at least one item in this order before allowing the status update.
     
     const { status } = await req.json();
-    const orderId = params.id;
 
     if (!status) {
       return NextResponse.json({ error: 'Status is required' }, { status: 400 });
