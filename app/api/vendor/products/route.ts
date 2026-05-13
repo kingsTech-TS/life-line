@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, description, price, images, category, stock, variants, slug } = body;
+    const { name, description, price, images, category, stock, variants, specifications, slug } = body;
 
     const item = new ShopItem({
       name,
@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
       category,
       stock,
       variants,
+      specifications,
       slug: slug ? slugify(slug) : generateUniqueSlug(name),
       vendorId: new mongoose.Types.ObjectId(vendorId),
       isFeatured: false 

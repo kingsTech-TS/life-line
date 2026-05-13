@@ -51,6 +51,7 @@ export default function AdminShop() {
     vendorId: "",
     images: [] as string[],
     variants: [] as { type: string; options: string[] }[],
+    specifications: [] as { label: string; value: string }[],
   });
 
   const slugify = (text: string) => {
@@ -98,6 +99,7 @@ export default function AdminShop() {
       vendorId: item.vendorId?._id || item.vendorId || "",
       images: item.images || (item.image ? [item.image] : []),
       variants: item.variants || [],
+      specifications: item.specifications || [],
     });
     setIsDialogOpen(true);
   };
@@ -193,6 +195,26 @@ export default function AdminShop() {
     }));
   };
 
+  const addSpec = () => {
+    setFormData(prev => ({
+      ...prev,
+      specifications: [...prev.specifications, { label: "", value: "" }]
+    }));
+  };
+
+  const updateSpec = (index: number, field: "label" | "value", val: string) => {
+    const newSpecs = [...formData.specifications];
+    newSpecs[index][field] = val;
+    setFormData(prev => ({ ...prev, specifications: newSpecs }));
+  };
+
+  const removeSpec = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      specifications: prev.specifications.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.images.length === 0) {
@@ -235,6 +257,7 @@ export default function AdminShop() {
           vendorId: "",
           images: [],
           variants: [],
+          specifications: [],
         });
       } else {
         toast.error(
@@ -285,6 +308,7 @@ export default function AdminShop() {
                 vendorId: "",
                 images: [],
                 variants: [],
+                specifications: [],
               });
               setIsDialogOpen(true);
             }}
@@ -453,7 +477,7 @@ export default function AdminShop() {
 
       {/* New Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+        <DialogContent className="max-w-5xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
           <div className="flex flex-col h-[85vh] md:h-auto max-h-[90vh]">
             <DialogHeader className="p-6 md:p-8 pb-4 bg-muted/30">
               <div className="flex justify-between items-center">
@@ -737,6 +761,49 @@ export default function AdminShop() {
                               </Button>
                             </div>
                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Specifications Editor */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-black uppercase tracking-widest text-foreground/60 ml-1 flex items-center gap-2">
+                        <ListFilter size={14} className="text-primary" /> Technical Specifications
+                      </label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={addSpec}
+                        className="text-xs font-bold text-primary px-2 h-7"
+                      >
+                        <Plus size={14} className="mr-1" /> Add Spec
+                      </Button>
+                    </div>
+                    <div className="space-y-3">
+                      {formData.specifications.map((spec, sIdx) => (
+                        <div key={sIdx} className="flex gap-2 items-center group/spec">
+                          <Input
+                            placeholder="Label (e.g. Weight)"
+                            className="h-11 flex-1 rounded-xl bg-muted/20 border-none text-xs font-bold"
+                            value={spec.label}
+                            onChange={(e) => updateSpec(sIdx, "label", e.target.value)}
+                          />
+                          <Input
+                            placeholder="Value (e.g. 1.2kg)"
+                            className="h-11 flex-1 rounded-xl bg-muted/20 border-none text-xs font-bold"
+                            value={spec.value}
+                            onChange={(e) => updateSpec(sIdx, "value", e.target.value)}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeSpec(sIdx)}
+                            className="text-muted-foreground hover:text-red-500 opacity-0 group-hover/spec:opacity-100 transition-opacity"
+                          >
+                            <X size={14} />
+                          </button>
                         </div>
                       ))}
                     </div>

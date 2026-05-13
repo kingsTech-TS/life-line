@@ -13,6 +13,10 @@ export interface IShopItem extends Document {
     type: string; // e.g., "Size", "Color"
     options: string[]; // e.g., ["S", "M", "L"]
   }[];
+  specifications: {
+    label: string;
+    value: string;
+  }[];
   isFeatured: boolean;
   vendorId?: mongoose.Types.ObjectId | string; // Optional for platform-owned products
   createdAt: Date;
@@ -33,6 +37,12 @@ const ShopItemSchema: Schema = new Schema(
       {
         type: { type: String },
         options: [{ type: String }],
+      },
+    ],
+    specifications: [
+      {
+        label: { type: String },
+        value: { type: String },
       },
     ],
     isFeatured: { type: Boolean, default: false },
