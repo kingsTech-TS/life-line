@@ -39,12 +39,20 @@ interface FinancialStats {
     createdAt: string;
     isAnonymous: boolean;
   }[];
+  ethics: {
+    title: string;
+    description: string;
+    icon: string;
+  }[];
 }
 
 const iconMap: Record<string, any> = {
   Activity,
   Droplets,
-  BookOpen
+  BookOpen,
+  ShieldCheck,
+  Heart,
+  Target
 };
 
 export default function FinancesPage() {
@@ -268,24 +276,20 @@ export default function FinancesPage() {
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-3xl font-black text-foreground mb-6 tracking-tight">Our Financial Ethics</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div>
-                <h4 className="text-sm font-black uppercase text-primary mb-3">Audited Reports</h4>
-                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                  We undergo annual external audits to ensure our reporting is accurate and compliant with global standards.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-black uppercase text-primary mb-3">Zero Commissions</h4>
-                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                  Platform staff do not take commissions on donations. 100% of your gift is allocated to the mission.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-black uppercase text-primary mb-3">Direct Impact</h4>
-                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                  We work directly with community leaders to eliminate middlemen and ensure funds reach those in need.
-                </p>
-              </div>
+              {stats?.ethics.map((item, i) => {
+                const Icon = iconMap[item.icon];
+                return (
+                  <div key={i}>
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                      {Icon && <Icon size={20} />}
+                    </div>
+                    <h4 className="text-sm font-black uppercase text-primary mb-3">{item.title}</h4>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

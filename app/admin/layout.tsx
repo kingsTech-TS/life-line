@@ -17,7 +17,8 @@ import {
   ChevronRight,
   User,
   Store,
-  Settings
+  Settings,
+  BarChart3
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -103,6 +104,7 @@ export default function AdminLayout({
     { href: "/admin/projects", label: "Projects", icon: Briefcase },
     { href: "/admin/donations", label: "Donations", icon: Heart },
     { href: "/admin/impact", label: "Impact", icon: TrendingUp },
+    { href: "/admin/finances", label: "Finances", icon: BarChart3 },
     { href: "/admin/shop", label: "Inventory", icon: ShoppingBag },
     { href: "/admin/vendors", label: "Vendors", icon: Store },
     { href: "/admin/ambassadors", label: "Ambassadors", icon: User },

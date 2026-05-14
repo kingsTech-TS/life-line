@@ -56,24 +56,34 @@ export default function TrackOrder() {
 
   const handleTrack = async (e?: React.FormEvent, idToTrack?: string) => {
     if (e) e.preventDefault();
-    const id = idToTrack || orderId;
-    if (!id.trim()) return setError("Please enter an order ID");
+    
+    // Ensure we have a valid, trimmed ID
+    const id = (idToTrack || orderId || "").trim();
+    
+    if (!id) {
+      setError("Please enter a valid order ID");
+      return;
+    }
     
     setLoading(true);
     setError("");
     setResult(null);
 
     try {
-      const res = await fetch(`/api/orders/track?id=${id.trim()}`);
+      // Use URLSearchParams for safe encoding
+      const params = new URLSearchParams({ id });
+      const res = await fetch(`/api/orders/track?${params.toString()}`);
+      
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Order not found. Please check your order ID.");
+        setError(data.error || "Order not found. Please verify your order ID.");
       } else {
         const data = await res.json();
         setResult(data);
       }
-    } catch {
-      setError("Unable to connect. Please try again.");
+    } catch (err) {
+      console.error("Track Error:", err);
+      setError("Connection error. Please check your internet and try again.");
     } finally {
       setLoading(false);
     }
