@@ -151,7 +151,7 @@ export default function PaymentModal({
         if (!isProcessing) onOpenChange(v);
       }}
     >
-      <DialogContent className="max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+      <DialogContent className="max-w-lg p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
         <div className="flex flex-col">
           {/* Header */}
           <div className="p-8 pb-6 bg-primary/5">

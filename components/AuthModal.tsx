@@ -91,7 +91,7 @@ export default function AuthModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="relative w-full max-w-md overflow-hidden rounded-[2rem] shadow-2xl"
+            className="relative w-full max-w-lg overflow-hidden rounded-[2rem] shadow-2xl"
             style={{
               background: "var(--card)",
               border: "1px solid var(--border)",

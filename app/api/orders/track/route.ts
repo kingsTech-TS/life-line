@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     // 4. Try finding by Payment Reference (often used by users)
     if (!order) {
-      order = await Order.findOne({ paymentReference: id });
+      order = await Order.findOne({ paymentReference: id }); 
     }
 
     // 5. Try finding by short ID (last characters) with safety

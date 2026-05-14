@@ -294,7 +294,7 @@ export default function AdminAmbassadors() {
       </Card>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
           <div className="flex flex-col">
             <DialogHeader className="p-8 pb-4 bg-muted/30 relative">
               <DialogTitle className="text-2xl font-black tracking-tight underline decoration-primary decoration-4 underline-offset-8">

@@ -195,7 +195,17 @@ export default function AdminImpact() {
           </p>
         </div>
         <Button
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setEditingItem(null);
+            setFormData({
+              title: "",
+              description: "",
+              imageUrl: "",
+              year: new Date().getFullYear(),
+              tags: "",
+            });
+            setIsDialogOpen(true);
+          }}
           className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
         >
           <Plus size={20} /> <span className="font-bold">New Report</span>

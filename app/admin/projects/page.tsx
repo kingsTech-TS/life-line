@@ -169,9 +169,8 @@ export default function AdminProjects() {
           status: "active",
         });
       } else {
-        toast.error(
-          editingItem ? "Failed to update project" : "Failed to create project",
-        );
+        const errorData = await res.json();
+        toast.error(errorData.error || (editingItem ? "Failed to update project" : "Failed to create project"));
       }
     } catch (error) {
       toast.error("An error occurred");
@@ -198,7 +197,20 @@ export default function AdminProjects() {
           </p>
         </div>
         <Button
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setEditingItem(null);
+            setFormData({
+              title: "",
+              description: "",
+              goalAmount: 0,
+              currentAmount: 0,
+              country: "",
+              image: "",
+              impact: "",
+              status: "active",
+            });
+            setIsDialogOpen(true);
+          }}
           className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
         >
           <Plus size={20} /> <span className="font-bold">New Project</span>

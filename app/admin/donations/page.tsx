@@ -369,7 +369,7 @@ export default function AdminDonations() {
           if (!open) setViewingDonation(null);
         }}
       >
-        <DialogContent className="max-w-lg p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
           {viewingDonation && (
             <div className="flex flex-col">
               {/* Header with status color */}

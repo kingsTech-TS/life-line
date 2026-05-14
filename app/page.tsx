@@ -57,7 +57,7 @@ export default function Home() {
   const faqs = [
     {
       q: "Who’s behind Lifeline?",
-      a: "Lifeline is powered by Restora Africa committed to building black communities globally.",
+      a: "Lifeline is powered by a collective of people and partners committed to building black communities globally.",
     },
     {
       q: "How can I learn more about your governance and legal structure?",
@@ -65,7 +65,7 @@ export default function Home() {
     },
     {
       q: "Is Lifeline a registered charity?",
-      a: "LifeLine is a community outreach program organized by Restora Africa. Restora Africa is a Registered NGO.",
+      a: "Yes, Lifeline is a legally registered non-profit organization.",
     },
     {
       q: "How does Lifeline select and vet project partners?",

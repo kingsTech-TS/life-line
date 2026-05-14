@@ -338,7 +338,7 @@ export default function AdminVendors() {
 
       {/* Vendor Details Dialog */}
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-md rounded-[2rem] p-8">
+        <DialogContent className="max-w-xl rounded-[2rem] p-8">
           {selectedVendor && (
             <>
               <DialogHeader>

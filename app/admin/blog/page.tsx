@@ -192,7 +192,19 @@ export default function AdminBlog() {
           </p>
         </div>
         <Button
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setEditingItem(null);
+            setFormData({
+              title: "",
+              content: "",
+              excerpt: "",
+              image: "",
+              author: "",
+              category: "",
+              status: "published",
+            });
+            setIsDialogOpen(true);
+          }}
           className="rounded-2xl h-12 px-6 flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
         >
           <Plus size={20} /> <span className="font-bold">New Blog Post</span>
