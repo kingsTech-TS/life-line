@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Donation from "@/models/Donation";
 import Order from "@/models/Order";
+import ShopItem from "@/models/ShopItem";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET(request: Request) {
   try {
@@ -88,10 +90,74 @@ export async function GET(request: Request) {
     );
 
     // Also update order if it exists
-    await Order.findOneAndUpdate(
+    const order = await Order.findOneAndUpdate(
       { paymentReference: reference },
-      { status: "processing" } // Mark as processing once paid
+      { status: "processing" }, // Mark as processing once paid
+      { new: true }
     );
+
+    if (order) {
+      // Notify vendors and update stock
+      const vendorsNotified = new Set();
+      
+      for (const item of order.items) {
+        // Decrement stock
+        try {
+          const product = await ShopItem.findById(item.productId);
+          if (product) {
+            product.stock = Math.max(0, product.stock - item.quantity);
+            await product.save();
+
+            // Notify for low stock
+            if (product.stock <= 5) {
+              await createNotification({
+                recipientId: item.vendorId,
+                recipientType: 'vendor',
+                title: 'Low Stock Alert',
+                message: `Your item "${product.name}" is running low on stock (${product.stock} left).`,
+                type: 'stock',
+                link: '/vendor/products'
+              });
+            } else if (product.stock === 0) {
+              await createNotification({
+                recipientId: item.vendorId,
+                recipientType: 'vendor',
+                title: 'Out of Stock',
+                message: `Your item "${product.name}" is out of stock.`,
+                type: 'stock',
+                link: '/vendor/products'
+              });
+            }
+          }
+        } catch (stockErr) {
+          console.error("Stock update error:", stockErr);
+        }
+
+        // Notify vendor about new order
+        if (item.vendorId && !vendorsNotified.has(item.vendorId)) {
+          await createNotification({
+            recipientId: item.vendorId,
+            recipientType: 'vendor',
+            title: 'New Order Received',
+            message: `You have received a new order for ${order.customerName}.`,
+            type: 'order',
+            link: `/vendor/purchases`
+          });
+
+          // Also notify about payment (simplified as the platform handles payout)
+          await createNotification({
+            recipientId: item.vendorId,
+            recipientType: 'vendor',
+            title: 'Payment Confirmed',
+            message: `Payment for order ${reference} has been confirmed and is being processed for your sub-account.`,
+            type: 'payment',
+            link: '/vendor/purchases'
+          });
+
+          vendorsNotified.add(item.vendorId);
+        }
+      }
+    }
 
     if (!donation) {
       // Donation record missing in DB — still return success with Paystack data

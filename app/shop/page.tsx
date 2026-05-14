@@ -96,7 +96,7 @@ export default function Shop() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-black tracking-tighter mb-4 leading-none"
+            className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-4 leading-none"
           >
             LifeLine <span className="text-white/60">Shop</span>
           </motion.h1>

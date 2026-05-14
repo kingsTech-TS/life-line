@@ -67,9 +67,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 merged.push(gItem);
               }
             });
-            itemsToSet = merged;
+            setCartItems(merged);
             // Clear guest cart after merging
             localStorage.removeItem("lifeline_cart");
+            
+            // Sync merged cart to database immediately
+            fetch("/api/auth/cart", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ cart: merged }),
+            }).catch((err) => console.error("Failed to sync merged cart", err));
+
+            setTimeout(() => {
+              isSyncingFromUser.current = false;
+            }, 0);
+            return;
           }
         } catch (e) {
           console.error("Failed to parse guest cart during merge");
@@ -89,6 +101,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           console.error("Failed to parse cart from local storage");
         }
+      } else {
+        setCartItems([]);
       }
     }
   }, [user]);
@@ -116,10 +130,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartItems, user]);
 
   const addToCart = (product: any, variants: { [key: string]: string }) => {
-    if (!user) {
-      openAuthModal();
-      return;
-    }
     setCartItems((prev) => {
       // Check if item with same ID and variants already exists
       const existingItemIndex = prev.findIndex(

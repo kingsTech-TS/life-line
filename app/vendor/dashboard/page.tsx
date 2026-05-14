@@ -156,7 +156,7 @@ export default function VendorDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <Card className="p-6 rounded-[2rem] border border-border/50 bg-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+            <Card className="p-5 md:p-6 rounded-3xl md:rounded-[2rem] border border-border/50 bg-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
                 <card.icon size={100} />
               </div>
@@ -185,7 +185,7 @@ export default function VendorDashboard() {
           transition={{ delay: 0.4 }}
           className="lg:col-span-2"
         >
-          <Card className="h-full p-8 rounded-[2.5rem] border border-border/50 bg-card shadow-sm flex flex-col">
+          <Card className="h-full p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-border/50 bg-card shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-xl font-black tracking-tight">
@@ -251,7 +251,7 @@ export default function VendorDashboard() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="h-full p-8 rounded-[2.5rem] border border-border/50 bg-card shadow-sm flex flex-col">
+          <Card className="h-full p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-border/50 bg-card shadow-sm flex flex-col">
             <h2 className="text-xl font-black tracking-tight mb-8">Quick Actions</h2>
             <div className="flex-1 space-y-4">
               <Link

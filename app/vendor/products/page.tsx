@@ -393,14 +393,14 @@ export default function VendorProducts() {
 
       {/* Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
-          <DialogHeader className="p-8 pb-4 bg-muted/30">
-            <DialogTitle className="text-3xl font-black tracking-tight">
+        <DialogContent className="max-w-4xl w-[calc(100%-2rem)] md:w-full h-[90vh] flex flex-col rounded-[2rem] md:rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogHeader className="p-6 md:p-8 pb-4 bg-muted/30">
+            <DialogTitle className="text-2xl md:text-3xl font-black tracking-tight">
               {editingItem ? "Edit Product" : "Add New Product"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar space-y-10">
+          <div className="flex-1 overflow-y-auto p-6 md:p-8 pt-4 custom-scrollbar space-y-10">
             <form onSubmit={handleSubmit} className="space-y-10">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div className="space-y-6">
@@ -674,19 +674,19 @@ export default function VendorProducts() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-border flex justify-end gap-4">
+              <div className="pt-6 border-t border-border flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
-                  className="h-14 px-8 rounded-2xl border-2 font-bold"
+                  className="h-12 md:h-14 px-8 rounded-xl md:rounded-2xl border-2 font-bold order-2 sm:order-1"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting || isUploading}
-                  className="h-14 px-12 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105 active:scale-95"
+                  className="h-12 md:h-14 px-12 rounded-xl md:rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105 active:scale-95 order-1 sm:order-2"
                 >
                   {isSubmitting ? (
                     <Loader2 className="animate-spin" />

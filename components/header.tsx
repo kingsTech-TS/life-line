@@ -95,19 +95,17 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            {user && (
-              <Link
-                href="/cart"
-                className="relative p-2 text-foreground hover:text-primary transition-colors"
-              >
-                <ShoppingCart size={24} />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-            )}
+            <Link
+              href="/cart"
+              className="relative p-2 text-foreground hover:text-primary transition-colors"
+            >
+              <ShoppingCart size={24} />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
 
             {user ? (
               <div className="relative group/user">
@@ -204,23 +202,21 @@ export default function Header() {
               </div>
             ))}
             <div className="px-4 py-2 space-y-4 border-t border-border mt-4 pt-4">
-              {user && (
-                <Link
-                  href="/cart"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
-                >
-                  <div className="relative">
-                    <ShoppingCart size={20} />
-                    {totalItems > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
-                        {totalItems}
-                      </span>
-                    )}
-                  </div>
-                  Cart ({totalItems})
-                </Link>
-              )}
+              <Link
+                href="/cart"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              >
+                <div className="relative">
+                  <ShoppingCart size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-background">
+                      {totalItems}
+                    </span>
+                  )}
+                </div>
+                Cart ({totalItems})
+              </Link>
 
               {user ? (
                 <div className="space-y-2">

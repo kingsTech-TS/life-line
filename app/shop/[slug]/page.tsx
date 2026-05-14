@@ -120,17 +120,19 @@ export default function ProductDetail() {
         <div className="container mx-auto px-4 max-w-7xl">
           
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-12">
-            <Link href="/" className="hover:text-[#016AF9] transition-colors">Home</Link>
-            <ChevronRight size={10} />
-            <Link href="/shop" className="hover:text-[#016AF9] transition-colors">Shop</Link>
-            <ChevronRight size={10} />
-            <span className="text-muted-foreground/60">{product.category}</span>
-            <ChevronRight size={10} />
-            <span className="text-foreground">{product.name}</span>
-          </nav>
+          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 mb-12">
+            <nav className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+              <Link href="/" className="hover:text-[#016AF9] transition-colors">Home</Link>
+              <ChevronRight size={10} />
+              <Link href="/shop" className="hover:text-[#016AF9] transition-colors">Shop</Link>
+              <ChevronRight size={10} />
+              <span className="text-muted-foreground/60">{product.category}</span>
+              <ChevronRight size={10} />
+              <span className="text-foreground">{product.name}</span>
+            </nav>
+          </div>
 
-          <div className="flex flex-col lg:flex-row gap-20">
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-20">
             {/* Gallery Section */}
             <div className="w-full lg:w-1/2 space-y-8">
               <motion.div
@@ -182,7 +184,7 @@ export default function ProductDetail() {
                   <p className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">
                     {product.category}
                   </p>
-                  <h1 className="text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight tracking-tighter">
                     {product.name}
                   </h1>
                   
@@ -345,9 +347,9 @@ export default function ProductDetail() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="overflow-hidden rounded-2xl border border-zinc-100"
+                    className="overflow-x-auto rounded-2xl border border-zinc-100"
                   >
-                    <table className="w-full text-left border-collapse">
+                    <table className="min-w-[600px] w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-[#016AF9] text-white">
                           <th className="p-5 font-black text-sm uppercase tracking-widest border-r border-white/10">Specification</th>

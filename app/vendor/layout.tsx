@@ -25,6 +25,8 @@ export default function VendorLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [vendor, setVendor] = useState<any>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -39,8 +41,40 @@ export default function VendorLayout({
         if (data.vendor) setVendor(data.vendor);
       } catch (err) {}
     };
+
+    const fetchNotifications = async () => {
+      try {
+        const res = await fetch("/api/vendor/notifications");
+        const data = await res.json();
+        if (Array.isArray(data)) setNotifications(data);
+      } catch (err) {}
+    };
+
     fetchVendor();
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000); // Fetch every minute
+    return () => clearInterval(interval);
   }, [isAuthPage]);
+
+  const markAsRead = async (id: string) => {
+    try {
+      await fetch("/api/vendor/notifications", {
+        method: "PATCH",
+        body: JSON.stringify({ notificationId: id })
+      });
+      setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+    } catch (err) {}
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await fetch("/api/vendor/notifications", {
+        method: "PATCH",
+        body: JSON.stringify({ allRead: true })
+      });
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch (err) {}
+  };
 
   if (isAuthPage) {
     return <>{children}</>;
@@ -167,10 +201,91 @@ export default function VendorLayout({
             </div>
             
             <div className="flex items-center gap-3">
-              <button className="p-2.5 rounded-xl bg-card border border-border/50 shadow-sm hover:bg-muted transition-colors relative">
-                <Bell size={18} className="text-muted-foreground" />
-                <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-card" />
-              </button>
+              {/* Notification System */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                  className={`p-2.5 rounded-xl border border-border/50 shadow-sm transition-all relative ${
+                    isNotificationsOpen ? "bg-primary text-white" : "bg-card hover:bg-muted"
+                  }`}
+                >
+                  <Bell size={18} className={isNotificationsOpen ? "text-white" : "text-muted-foreground"} />
+                  {notifications.filter(n => !n.isRead).length > 0 && (
+                    <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-card animate-pulse" />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isNotificationsOpen && (
+                    <>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-40 lg:hidden"
+                        onClick={() => setIsNotificationsOpen(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="fixed inset-x-4 top-20 md:absolute md:inset-auto md:right-0 md:mt-3 md:w-96 bg-card/95 backdrop-blur-2xl border border-border/50 shadow-2xl rounded-[2rem] md:rounded-3xl z-50 overflow-hidden"
+                      >
+                        <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                          <h3 className="font-black text-sm uppercase tracking-widest">Notifications</h3>
+                          <button
+                            onClick={markAllAsRead}
+                            className="text-[10px] font-black uppercase text-primary hover:underline"
+                          >
+                            Mark all as read
+                          </button>
+                        </div>
+                        <div className="max-h-[400px] overflow-y-auto p-2 space-y-1">
+                          {notifications.length === 0 ? (
+                            <div className="py-10 text-center text-muted-foreground italic text-xs">
+                              No notifications yet
+                            </div>
+                          ) : (
+                            notifications.map((n) => (
+                              <div
+                                key={n._id}
+                                onClick={() => markAsRead(n._id)}
+                                className={`p-4 rounded-2xl transition-all cursor-pointer border border-transparent ${
+                                  n.isRead ? "opacity-60" : "bg-muted/50 border-border/30"
+                                } hover:bg-muted`}
+                              >
+                                <div className="flex gap-3">
+                                  <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
+                                    n.type === 'order' ? "bg-blue-500" :
+                                    n.type === 'stock' ? "bg-amber-500" :
+                                    n.type === 'payment' ? "bg-emerald-500" : "bg-primary"
+                                  }`} />
+                                  <div className="space-y-1">
+                                    <p className="text-xs font-black leading-none">{n.title}</p>
+                                    <p className="text-[11px] text-muted-foreground leading-snug">{n.message}</p>
+                                    <p className="text-[9px] text-muted-foreground/50 font-medium">
+                                      {new Date(n.createdAt).toLocaleDateString()} · {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                        {notifications.length > 0 && (
+                          <Link
+                            href="/vendor/dashboard"
+                            onClick={() => setIsNotificationsOpen(false)}
+                            className="block p-4 bg-muted/30 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors border-t border-border/50"
+                          >
+                            View All Activity
+                          </Link>
+                        )}
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
               <div className="flex items-center gap-3 pl-2 sm:pl-4 border-l border-border/50">
                 <div className="flex flex-col text-right hidden sm:flex">
                   <span className="text-sm font-black text-foreground leading-none">{vendor?.businessName || "Loading..."}</span>

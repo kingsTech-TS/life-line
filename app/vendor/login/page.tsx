@@ -85,7 +85,7 @@ export default function VendorLogin() {
           </motion.div>
         </div>
 
-        <Card className="p-8 md:p-10 rounded-[3rem] border border-border shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] bg-white/70 backdrop-blur-3xl dark:bg-zinc-900/50">
+        <Card className="p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-border shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] bg-white/70 backdrop-blur-3xl dark:bg-zinc-900/50">
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">

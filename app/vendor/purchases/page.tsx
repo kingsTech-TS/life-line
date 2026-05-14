@@ -113,7 +113,7 @@ export default function VendorPurchases() {
       ) : (
         <div className="space-y-6">
           {filteredSales.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-32 bg-card rounded-[2.5rem] border border-border/50 text-center opacity-50">
+            <div className="flex flex-col items-center justify-center py-24 md:py-32 bg-card rounded-3xl md:rounded-[2.5rem] border border-border/50 text-center opacity-50">
               <Package className="text-muted-foreground mb-4" size={64} />
               <p className="text-2xl font-black tracking-tight">No sales found.</p>
               <p className="text-sm font-medium text-muted-foreground mt-2">Try adjusting your search term.</p>
@@ -126,11 +126,11 @@ export default function VendorPurchases() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="p-0 rounded-[2.5rem] border border-border/50 bg-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+                <Card className="p-0 rounded-[2rem] md:rounded-[2.5rem] border border-border/50 bg-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
                   <div className="flex flex-col lg:flex-row">
                     
                     {/* Left Column: Order Details */}
-                    <div className="lg:w-1/3 bg-muted/30 p-8 border-r border-border/50">
+                    <div className="lg:w-1/3 bg-muted/30 p-6 md:p-8 border-r border-border/50">
                       <div className="flex items-center gap-4 mb-8">
                         <div className="w-12 h-12 rounded-2xl bg-background border border-border/50 flex items-center justify-center text-foreground shadow-sm">
                           <ShoppingBag size={20} />
@@ -178,7 +178,7 @@ export default function VendorPurchases() {
                     </div>
 
                     {/* Right Column: Items and Total */}
-                    <div className="lg:w-2/3 p-8 flex flex-col">
+                    <div className="lg:w-2/3 p-6 md:p-8 flex flex-col">
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                           <Package size={16} /> Items Purchased
@@ -225,13 +225,13 @@ export default function VendorPurchases() {
                         ))}
                       </div>
 
-                      <div className="mt-8 flex items-center justify-between p-6 rounded-2xl bg-primary/5 border border-primary/10">
-                        <div>
+                      <div className="mt-8 flex flex-col sm:flex-row items-center justify-between p-6 rounded-2xl bg-primary/5 border border-primary/10 gap-4">
+                        <div className="text-center sm:text-left">
                           <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Your Payout</p>
                           <p className="text-sm text-primary/70 font-bold">After {commissionRate}% platform fee</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-3xl font-black text-primary tracking-tighter">₦{(sale.vendorTotal ?? 0).toLocaleString()}</p>
+                          <p className="text-2xl md:text-3xl font-black text-primary tracking-tighter">₦{(sale.vendorTotal ?? 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>

@@ -68,7 +68,8 @@ export default function CartPage() {
           
           {/* Main Cart Content */}
           <div className="lg:col-span-8 space-y-8">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-[#016AF9]">
@@ -145,6 +146,74 @@ export default function CartPage() {
                   </AnimatePresence>
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile List View */}
+            <div className="md:hidden space-y-6">
+              <AnimatePresence mode="popLayout">
+                {cartItems.map((item) => (
+                  <motion.div
+                    key={`${item.id}-${JSON.stringify(item.variants)}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="p-6 rounded-3xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm relative overflow-hidden group"
+                  >
+                    <div className="flex gap-4">
+                      <div className="h-24 w-24 rounded-2xl overflow-hidden bg-muted flex-shrink-0 relative border border-zinc-100 dark:border-zinc-800">
+                        <Image 
+                          src={item.image || "/placeholder.svg"} 
+                          alt={item.name} 
+                          fill 
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-black text-base text-foreground tracking-tight leading-tight line-clamp-2">{item.name}</h3>
+                          <button 
+                            onClick={() => removeFromCart(item.id, item.variants)}
+                            className="p-2 text-zinc-400 hover:text-red-500"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {Object.entries(item.variants).map(([key, val]) => (
+                            <span key={key} className="text-[8px] font-black text-muted-foreground uppercase bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 px-1.5 py-0.5 rounded-md">
+                              {key}: {val}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="mt-3 font-black text-lg text-[#016AF9]">₦{item.price.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-zinc-50 dark:border-zinc-900">
+                      <div className="inline-flex items-center border border-zinc-100 dark:border-zinc-800 rounded-xl overflow-hidden h-10 bg-zinc-50 dark:bg-zinc-900">
+                        <button 
+                          onClick={() => updateQuantity(item.id, item.variants, item.quantity - 1)}
+                          className="w-10 h-full flex items-center justify-center border-r border-zinc-100 dark:border-zinc-800"
+                        >
+                          <Minus size={12} strokeWidth={3} />
+                        </button>
+                        <span className="w-10 text-center font-black text-sm">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.id, item.variants, item.quantity + 1)}
+                          className="w-10 h-full flex items-center justify-center border-l border-zinc-100 dark:border-zinc-800"
+                        >
+                          <Plus size={12} strokeWidth={3} />
+                        </button>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest mb-1">Subtotal</p>
+                        <p className="font-black text-xl tracking-tighter">₦{(item.price * item.quantity).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
 
             {/* Bottom Actions */}
