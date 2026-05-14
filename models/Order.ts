@@ -46,7 +46,6 @@ const OrderSchema: Schema = new Schema(
       default: 'pending',
     },
     commissionRate: { type: Number, default: 15 },
-    paymentReference: { type: String, required: true },
   },
   { timestamps: true }
 );
