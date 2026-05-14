@@ -25,16 +25,40 @@ export default function AdminDashboard() {
     activeProjects: 0,
     totalShopOrders: 0,
   });
+  const [activities, setActivities] = useState<any[]>([]);
+  const [impactProgress, setImpactProgress] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulated fetching for now
+  const fetchStats = async () => {
+    try {
+      const res = await fetch("/api/admin/stats");
+      const data = await res.json();
+      if (data.stats) setStats(data.stats);
+      if (data.activities) setActivities(data.activities);
+      if (data.impactProgress) setImpactProgress(data.impactProgress);
+    } catch (err) {
+      console.error("Failed to fetch admin stats:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setStats({
-      totalDonations: 432,
-      totalAmount: 12500000,
-      activeProjects: 8,
-      totalShopOrders: 156,
-    });
+    fetchStats();
+    const interval = setInterval(fetchStats, 300000); // Refresh every 5 mins
+    return () => clearInterval(interval);
   }, []);
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return date.toLocaleDateString();
+  };
 
   const statCards = [
     {
@@ -49,7 +73,7 @@ export default function AdminDashboard() {
       label: "Amount Raised",
       value: `₦${(stats.totalAmount / 1000000).toFixed(1)}M`,
       icon: TrendingUp,
-      trend: "+5.2%",
+      trend: stats.totalAmount > 0 ? "+5.2%" : "0%",
       color: "from-emerald-500 to-teal-400",
       bgLight: "bg-emerald-500/10 text-emerald-500",
     },
@@ -151,34 +175,35 @@ export default function AdminDashboard() {
             </div>
             
             <div className="flex-1 space-y-4">
-              {[
-                { name: "John Doe", action: "donated", amount: "₦50,000", time: "2 hours ago", initial: "JD", type: "donation" },
-                { name: "Sarah Smith", action: "purchased", item: "LifeLine Hoodie", time: "4 hours ago", initial: "SS", type: "purchase" },
-                { name: "Global Health", action: "joined as", partner: "Partner", time: "6 hours ago", initial: "GH", type: "partner" },
-                { name: "Michael Obi", action: "donated", amount: "₦120,000", time: "1 day ago", initial: "MO", type: "donation" },
-              ].map((activity, i) => (
-                <div key={i} className="flex items-center gap-5 p-4 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-all group cursor-pointer">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black shadow-sm group-hover:scale-105 transition-transform ${
-                    activity.type === 'donation' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' :
-                    activity.type === 'purchase' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                    'bg-blue-500/10 text-blue-500 border border-blue-500/20'
-                  }`}>
-                    {activity.initial}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-bold text-foreground">
-                      {activity.name} <span className="text-muted-foreground font-medium">{activity.action}</span>{" "}
-                      <span className="font-black">
-                        {activity.amount || activity.item || activity.partner}
-                      </span>
-                    </p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">
-                      {activity.time}
-                    </p>
-                  </div>
-                  <ChevronRight size={18} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              {activities.length === 0 ? (
+                <div className="py-10 text-center text-muted-foreground italic text-sm">
+                  No recent activity found.
                 </div>
-              ))}
+              ) : (
+                activities.map((activity, i) => (
+                  <div key={i} className="flex items-center gap-5 p-4 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-all group cursor-pointer">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black shadow-sm group-hover:scale-105 transition-transform ${
+                      activity.type === 'donation' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' :
+                      activity.type === 'purchase' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                      'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                    }`}>
+                      {activity.initial}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground">
+                        {activity.name} <span className="text-muted-foreground font-medium">{activity.action}</span>{" "}
+                        <span className="font-black">
+                          {activity.amount || activity.item || activity.partner}
+                        </span>
+                      </p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">
+                        {formatTime(activity.time)}
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </motion.div>
@@ -192,37 +217,39 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-black tracking-tight mb-8">Impact Progress</h2>
             
             <div className="flex-1 space-y-8">
-              {[
-                { title: "Rhema School", progress: 75, color: "bg-blue-500" },
-                { title: "Clean Water Project", progress: 40, color: "bg-emerald-500" },
-                { title: "Village Clinic", progress: 92, color: "bg-rose-500" },
-              ].map((project, i) => (
-                <div key={i} className="space-y-3">
-                  <div className="flex justify-between items-end">
-                    <span className="text-sm font-bold">{project.title}</span>
-                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${project.color.replace('bg-', 'text-')} ${project.color.replace('bg-', 'bg-')}/10`}>
-                      {project.progress}%
-                    </span>
-                  </div>
-                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${project.progress}%` }}
-                      transition={{ duration: 1, delay: 0.8 }}
-                      className={`h-full ${project.color} rounded-full`}
-                    />
-                  </div>
+              {impactProgress.length === 0 ? (
+                <div className="py-10 text-center text-muted-foreground italic text-sm">
+                  No active projects tracking progress.
                 </div>
-              ))}
+              ) : (
+                impactProgress.map((project, i) => (
+                  <div key={i} className="space-y-3">
+                    <div className="flex justify-between items-end">
+                      <span className="text-sm font-bold">{project.title}</span>
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${project.color.replace('bg-', 'text-')} ${project.color.replace('bg-', 'bg-')}/10`}>
+                        {project.progress}%
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${project.progress}%` }}
+                        transition={{ duration: 1, delay: 0.8 }}
+                        className={`h-full ${project.color} rounded-full`}
+                      />
+                    </div>
+                  </div>
+                ))
+              )}
 
               <div className="mt-auto pt-8">
                 <div className="p-6 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-white relative overflow-hidden shadow-lg shadow-primary/20">
                   <div className="relative z-10">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Weekly Goal</p>
-                    <h4 className="text-xl font-black mb-4 tracking-tight">Reached ₦2.4M of ₦3.0M</h4>
-                    <button className="px-5 py-2.5 rounded-xl bg-white text-primary text-xs font-black hover:scale-105 transition-transform shadow-sm">
-                      Manage Goals
-                    </button>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Platform Goal</p>
+                    <h4 className="text-xl font-black mb-4 tracking-tight">Total Raised: ₦{(stats.totalAmount / 1000000).toFixed(2)}M</h4>
+                    <Link href="/admin/impact" className="inline-block px-5 py-2.5 rounded-xl bg-white text-primary text-xs font-black hover:scale-105 transition-transform shadow-sm">
+                      View Impact Reports
+                    </Link>
                   </div>
                   <ShieldCheck size={120} className="absolute -bottom-6 -right-6 text-white/10 rotate-12" />
                 </div>
