@@ -45,6 +45,8 @@ const OrderSchema: Schema = new Schema(
       enum: ['pending', 'processing', 'packed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'],
       default: 'pending',
     },
+    commissionRate: { type: Number, default: 15 },
+    paymentReference: { type: String, required: true },
   },
   { timestamps: true }
 );

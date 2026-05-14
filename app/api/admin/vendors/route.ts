@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Vendor from '@/models/Vendor';
 import ShopItem from '@/models/ShopItem';
+import DeletedVendor from '@/models/DeletedVendor';
 import mongoose from 'mongoose';
 
 export async function GET(req: NextRequest) {
@@ -71,9 +72,21 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Vendor ID is required' }, { status: 400 });
     }
     
-    // Optionally delete all products by this vendor
+    const vendor = await Vendor.findById(id);
+    if (!vendor) {
+      return NextResponse.json({ error: 'Vendor not found' }, { status: 404 });
+    }
+
+    // Record the deletion
+    await DeletedVendor.create({
+      email: vendor.email,
+      businessName: vendor.businessName,
+    });
+    
+    // Delete all products by this vendor
     await ShopItem.deleteMany({ vendorId: id });
     
+    // Truly delete from database
     await Vendor.findByIdAndDelete(id);
     
     return NextResponse.json({ success: true });

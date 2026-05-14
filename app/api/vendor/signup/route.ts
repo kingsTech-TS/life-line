@@ -16,9 +16,17 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
 
-    const existingVendor = await Vendor.findOne({ email: email.toLowerCase() });
+    const emailLower = email.toLowerCase();
+    const existingVendor = await Vendor.findOne({ email: emailLower });
     if (existingVendor) {
       return NextResponse.json({ error: 'Email already in use' }, { status: 400 });
+    }
+
+    // Check if blacklisted/deleted by admin
+    const { default: DeletedVendor } = await import('@/models/DeletedVendor');
+    const wasDeleted = await DeletedVendor.findOne({ email: emailLower });
+    if (wasDeleted) {
+      return NextResponse.json({ error: 'This email is associated with an account that was deleted by the Admins. Please contact support.' }, { status: 403 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,6 +39,15 @@ export async function POST(req: NextRequest) {
       address,
       commissionRate: 15, // Default commission
       isApproved: false,   // Must be approved by admin before listing products
+    });
+
+    // Notify admins about new vendor
+    const { notifyAdmins } = await import('@/lib/notifications');
+    await notifyAdmins({
+      title: 'New Vendor Signup',
+      message: `A new vendor "${businessName}" has signed up and is awaiting approval.`,
+      type: 'system',
+      link: '/admin/vendors'
     });
 
     const token = jwt.sign(

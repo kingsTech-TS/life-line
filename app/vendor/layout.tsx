@@ -168,12 +168,18 @@ export default function VendorLayout({
             </nav>
 
             <div className="mt-auto pt-6 border-t border-border/50 px-2 space-y-2">
-               <button
-                className="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all duration-300 font-bold text-sm tracking-tight group"
+              <Link
+                href="/vendor/settings"
+                onClick={() => setIsSidebarOpen(false)}
+                className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold text-sm tracking-tight group ${
+                  pathname === "/vendor/settings" 
+                    ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                }`}
               >
-                <Settings size={20} className="group-hover:rotate-90 transition-transform duration-500" />
+                <Settings size={20} className={pathname === "/vendor/settings" ? "" : "group-hover:rotate-90 transition-transform duration-500"} />
                 <span>Settings</span>
-              </button>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-red-500 hover:bg-red-500/10 transition-all duration-300 font-bold text-sm tracking-tight"

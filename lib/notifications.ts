@@ -1,4 +1,5 @@
 import Notification from '@/models/Notification';
+import Admin from '@/models/Admin';
 import mongoose from 'mongoose';
 
 export async function createNotification({
@@ -30,5 +31,35 @@ export async function createNotification({
   } catch (error) {
     console.error('Failed to create notification:', error);
     return null;
+  }
+}
+
+export async function notifyAdmins({
+  title,
+  message,
+  type,
+  link
+}: {
+  title: string;
+  message: string;
+  type: 'order' | 'payment' | 'stock' | 'system';
+  link?: string;
+}) {
+  try {
+    const admins = await Admin.find({});
+    const notifications = admins.map(admin => ({
+      recipientId: admin._id,
+      recipientType: 'admin',
+      title,
+      message,
+      type,
+      link
+    }));
+    
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
+  } catch (error) {
+    console.error('Failed to notify admins:', error);
   }
 }

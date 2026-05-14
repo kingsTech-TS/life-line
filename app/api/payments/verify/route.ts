@@ -3,7 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import Donation from "@/models/Donation";
 import Order from "@/models/Order";
 import ShopItem from "@/models/ShopItem";
-import { createNotification } from "@/lib/notifications";
+import { createNotification, notifyAdmins } from "@/lib/notifications";
 
 export async function GET(request: Request) {
   try {
@@ -89,6 +89,15 @@ export async function GET(request: Request) {
       { new: true }
     );
 
+    if (donation && donation.amount > 0) {
+      await notifyAdmins({
+        title: 'New Donation Received',
+        message: `A new donation of ₦${donation.amount.toLocaleString()} has been received from ${donation.donorName}.`,
+        type: 'payment',
+        link: '/admin/donations'
+      });
+    }
+
     // Also update order if it exists
     const order = await Order.findOneAndUpdate(
       { paymentReference: reference },
@@ -133,28 +142,48 @@ export async function GET(request: Request) {
           console.error("Stock update error:", stockErr);
         }
 
-        // Notify vendor about new order
-        if (item.vendorId && !vendorsNotified.has(item.vendorId)) {
-          await createNotification({
-            recipientId: item.vendorId,
-            recipientType: 'vendor',
-            title: 'New Order Received',
-            message: `You have received a new order for ${order.customerName}.`,
+        // Check if it's an admin product or vendor product
+        if (!item.vendorId || item.vendorId === 'platform') {
+          // Admin product purchase
+          await notifyAdmins({
+            title: 'Admin Product Sold',
+            message: `Your product "${item.name}" was purchased by ${order.customerName}.`,
             type: 'order',
-            link: `/vendor/purchases`
+            link: '/admin/shop'
           });
-
-          // Also notify about payment (simplified as the platform handles payout)
-          await createNotification({
-            recipientId: item.vendorId,
-            recipientType: 'vendor',
-            title: 'Payment Confirmed',
-            message: `Payment for order ${reference} has been confirmed and is being processed for your sub-account.`,
+        } else {
+          // Vendor product - notify admin about commission
+          const commission = (item.price * item.quantity) * (order.commissionRate / 100);
+          await notifyAdmins({
+            title: 'Commission Received',
+            message: `Platform received ₦${commission.toLocaleString()} commission from ${item.name} sale by a vendor.`,
             type: 'payment',
-            link: '/vendor/purchases'
+            link: '/admin/vendors'
           });
 
-          vendorsNotified.add(item.vendorId);
+          // Notify vendor about new order
+          if (!vendorsNotified.has(item.vendorId)) {
+            await createNotification({
+              recipientId: item.vendorId,
+              recipientType: 'vendor',
+              title: 'New Order Received',
+              message: `You have received a new order for ${order.customerName}.`,
+              type: 'order',
+              link: `/vendor/purchases`
+            });
+
+            // Also notify about payment (simplified as the platform handles payout)
+            await createNotification({
+              recipientId: item.vendorId,
+              recipientType: 'vendor',
+              title: 'Payment Confirmed',
+              message: `Payment for order ${reference} has been confirmed and is being processed for your sub-account.`,
+              type: 'payment',
+              link: '/vendor/purchases'
+            });
+
+            vendorsNotified.add(item.vendorId);
+          }
         }
       }
     }

@@ -30,10 +30,26 @@ export default function AdminLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [admin, setAdmin] = useState<any>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
 
   const isAdminLogin = pathname === "/admin/login";
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch("/api/admin/notifications");
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setNotifications(data);
+        setUnreadCount(data.filter((n: any) => !n.isRead).length);
+      }
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+    }
+  };
 
   useEffect(() => {
     if (isAdminLogin) return;
@@ -41,11 +57,41 @@ export default function AdminLayout({
       try {
         const res = await fetch("/api/admin/me");
         const data = await res.json();
-        if (data.admin) setAdmin(data.admin);
+        if (data.admin) {
+          setAdmin(data.admin);
+          fetchNotifications();
+        }
       } catch (err) {}
     };
     fetchAdmin();
+
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
   }, [isAdminLogin]);
+
+  const markAsRead = async (id: string) => {
+    try {
+      await fetch("/api/admin/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationId: id }),
+      });
+      setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {}
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await fetch("/api/admin/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markAll: true }),
+      });
+      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (err) {}
+  };
 
   if (isAdminLogin) {
     return <>{children}</>;
@@ -60,6 +106,7 @@ export default function AdminLayout({
     { href: "/admin/shop", label: "Inventory", icon: ShoppingBag },
     { href: "/admin/vendors", label: "Vendors", icon: Store },
     { href: "/admin/ambassadors", label: "Ambassadors", icon: User },
+    { href: "/admin/settings", label: "Settings", icon: Settings },
   ];
 
   const handleLogout = async () => {
@@ -194,10 +241,89 @@ export default function AdminLayout({
                 <Search size={16} className="text-muted-foreground mr-2" />
                 <input type="text" placeholder="Search admin..." className="bg-transparent border-none outline-none text-sm w-48 focus:w-64 transition-all duration-300 placeholder:text-muted-foreground font-medium" />
               </div>
-              <button className="p-2.5 rounded-xl bg-card border border-border/50 shadow-sm hover:bg-muted transition-colors relative">
-                <Bell size={18} className="text-muted-foreground" />
-                <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-card" />
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className={`p-2.5 rounded-xl border border-border/50 shadow-sm transition-all relative ${
+                    showNotifications ? 'bg-primary text-white' : 'bg-card text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-background animate-in zoom-in">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showNotifications && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40 lg:hidden" 
+                        onClick={() => setShowNotifications(false)} 
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="fixed inset-x-4 top-20 md:absolute md:inset-auto md:right-0 md:mt-3 md:w-96 bg-card/95 backdrop-blur-2xl border border-border/50 shadow-2xl rounded-[2rem] md:rounded-3xl z-50 overflow-hidden"
+                      >
+                        <div className="p-4 border-b border-border/50 flex items-center justify-between bg-muted/30">
+                          <h3 className="font-black text-sm uppercase tracking-widest">Admin Notifications</h3>
+                          <button 
+                            onClick={markAllAsRead}
+                            className="text-[10px] font-black uppercase text-primary hover:underline"
+                          >
+                            Mark all as read
+                          </button>
+                        </div>
+                        <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                          {notifications.length === 0 ? (
+                            <div className="p-10 text-center text-muted-foreground">
+                              <Bell className="mx-auto mb-3 opacity-20" size={32} />
+                              <p className="text-xs font-bold">No notifications yet</p>
+                            </div>
+                          ) : (
+                            notifications.map((n) => (
+                              <div 
+                                key={n._id}
+                                onClick={() => {
+                                  markAsRead(n._id);
+                                  if (n.link) {
+                                    router.push(n.link);
+                                    setShowNotifications(false);
+                                  }
+                                }}
+                                className={`p-4 border-b border-border/30 hover:bg-muted/50 transition-colors cursor-pointer relative group ${!n.isRead ? 'bg-primary/5' : ''}`}
+                              >
+                                {!n.isRead && (
+                                  <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full" />
+                                )}
+                                <div className="flex justify-between items-start mb-1">
+                                  <span className={`text-[10px] font-black uppercase tracking-widest ${
+                                    n.type === 'order' ? 'text-blue-500' :
+                                    n.type === 'payment' ? 'text-green-500' :
+                                    n.type === 'stock' ? 'text-amber-500' :
+                                    'text-primary'
+                                  }`}>
+                                    {n.type}
+                                  </span>
+                                  <span className="text-[9px] font-bold text-muted-foreground/60">
+                                    {new Date(n.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">{n.title}</h4>
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
               <div className="flex items-center gap-3 pl-2 sm:pl-4 border-l border-border/50">
                 <div className="flex flex-col text-right hidden sm:flex">
                   <span className="text-sm font-black text-foreground leading-none">{admin?.username || "Loading..."}</span>

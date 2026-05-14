@@ -68,7 +68,11 @@ export default function VendorDashboard() {
         const res = await fetch('/api/vendor/banks');
         const data = await res.json();
         if (Array.isArray(data)) {
-          setBanks(data);
+          // Remove duplicate bank codes if any
+          const uniqueBanks = data.filter((bank, index, self) =>
+            index === self.findIndex((b) => b.code === bank.code)
+          );
+          setBanks(uniqueBanks);
         }
       } catch (err) {
         console.error("Failed to fetch banks", err);
